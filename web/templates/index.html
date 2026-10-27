@@ -3,22 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🍋 Smart Lemon Harvester AI — CyberAgri Vision</title>
+  <title>🍋 Smart Lemon Harvester AI — Live Vision</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-    :root {
-      --lemon-gold: #facc15;
-      --harvest-green: #10b981;
-      --tech-cyan: #06b6d4;
-      --dark-bg: #070d19;
-      --card-bg: rgba(15, 23, 42, 0.75);
-    }
-
     body {
-      background: radial-gradient(circle at top right, #0d2818 0%, #070d19 40%, #030712 100%);
+      background: radial-gradient(circle at top right, #0d2818 0%, #070d19 45%, #030712 100%);
       color: #f1f5f9;
       font-family: 'Space Grotesk', -apple-system, sans-serif;
       min-height: 100vh;
@@ -30,7 +22,7 @@
     }
 
     .glass {
-      background: var(--card-bg);
+      background: rgba(15, 23, 42, 0.8);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -38,27 +30,27 @@
     }
 
     .glass-glow-green {
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
     }
 
     .glass-glow-gold {
-      border: 1px solid rgba(250, 204, 21, 0.4);
-      box-shadow: 0 0 25px rgba(250, 204, 21, 0.2);
+      border: 1px solid rgba(250, 204, 21, 0.5);
+      box-shadow: 0 0 30px rgba(250, 204, 21, 0.25);
     }
 
     /* Cyber Viewfinder Reticle */
     .reticle-corner {
       position: absolute;
-      width: 20px;
-      height: 20px;
-      border-color: rgba(250, 204, 21, 0.8);
+      width: 22px;
+      height: 22px;
+      border-color: rgba(250, 204, 21, 0.85);
       pointer-events: none;
     }
-    .reticle-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
-    .reticle-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; }
-    .reticle-bl { bottom: 12px; left: 12px; border-bottom: 2px solid; border-left: 2px solid; }
-    .reticle-br { bottom: 12px; right: 12px; border-bottom: 2px solid; border-right: 2px solid; }
+    .reticle-tl { top: 12px; left: 12px; border-top: 2.5px solid; border-left: 2.5px solid; }
+    .reticle-tr { top: 12px; right: 12px; border-top: 2.5px solid; border-right: 2.5px solid; }
+    .reticle-bl { bottom: 12px; left: 12px; border-bottom: 2.5px solid; border-left: 2.5px solid; }
+    .reticle-br { bottom: 12px; right: 12px; border-bottom: 2.5px solid; border-right: 2.5px solid; }
 
     /* Animated Scanning Laser */
     .scan-laser {
@@ -66,7 +58,7 @@
       top: 0; left: 0; right: 0;
       height: 2px;
       background: linear-gradient(90deg, transparent, #10b981, #facc15, transparent);
-      box-shadow: 0 0 12px #10b981;
+      box-shadow: 0 0 14px #10b981;
       animation: scan 2.5s ease-in-out infinite alternate;
       pointer-events: none;
     }
@@ -98,7 +90,7 @@
       <div>
         <div class="flex items-center gap-1.5">
           <h1 class="text-sm font-bold tracking-tight text-white uppercase">Lemon Harvester AI</h1>
-          <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">LIVE</span>
         </div>
         <p class="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block pulse-glow"></span>
@@ -107,118 +99,44 @@
       </div>
     </div>
 
-    <!-- Right Quick Actions -->
-    <div class="flex items-center gap-1.5">
-      <div id="fpsBadge" class="px-2 py-1 rounded-lg glass text-[10px] font-mono text-emerald-400 border border-emerald-500/20">
-        ONLINE
-      </div>
+    <!-- Camera Source Selector -->
+    <div class="flex items-center gap-2">
+      <select id="cameraSourceSelect" class="bg-slate-900 border border-slate-700 text-xs font-semibold rounded-xl px-2.5 py-1.5 text-yellow-300 focus:outline-none focus:border-yellow-400">
+        <option value="2" selected>📱 Phone Camera (Iriun - Cam 2)</option>
+        <option value="0">💻 Laptop Webcam (Cam 0)</option>
+      </select>
     </div>
   </header>
 
   <!-- Main Container -->
   <main class="flex-1 flex flex-col px-4 pt-3 max-w-md mx-auto w-full gap-3">
 
-    <!-- Source Selection Mode Tabs -->
-    <div class="grid grid-cols-2 p-1 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-semibold">
-      <button id="tabPhoneCam" class="py-2 px-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-300 border border-yellow-500/30 transition flex items-center justify-center gap-1.5">
-        <i class="fa-solid fa-mobile-screen"></i> Phone Camera
-      </button>
-      <button id="tabIpStream" class="py-2 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5">
-        <i class="fa-solid fa-wifi"></i> IP Cam Stream
-      </button>
-    </div>
+    <!-- Viewfinder Container -->
+    <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden glass border border-slate-800 shadow-2xl flex items-center justify-center bg-black/90">
+      
+      <!-- Live Stream MJPEG Image (Direct from Python Backend) -->
+      <img id="liveStreamFeed" src="/api/video_feed?source=2" class="w-full h-full object-cover" alt="Live AI Detection Feed">
 
-    <!-- Section 1: Phone Camera Card -->
-    <div id="phoneCamSection" class="flex flex-col gap-3">
+      <!-- Laser Scanner Effect -->
+      <div class="scan-laser"></div>
 
-      <!-- Viewfinder Container -->
-      <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden glass border border-slate-800 shadow-2xl flex items-center justify-center bg-black/80">
-        
-        <!-- Live Video Element -->
-        <video id="webVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+      <!-- Targeting Reticle Brackets -->
+      <div class="reticle-corner reticle-tl"></div>
+      <div class="reticle-corner reticle-tr"></div>
+      <div class="reticle-corner reticle-bl"></div>
+      <div class="reticle-corner reticle-br"></div>
 
-        <!-- Annotated Freeze/Snap Image -->
-        <img id="annotatedSnapshot" class="absolute inset-0 w-full h-full object-contain bg-black/90 hidden z-10" alt="Annotated Lemon Detection">
-
-        <!-- Laser Scanner Effect -->
-        <div id="laserScanner" class="scan-laser"></div>
-
-        <!-- Targeting Reticle Brackets -->
-        <div class="reticle-corner reticle-tl"></div>
-        <div class="reticle-corner reticle-tr"></div>
-        <div class="reticle-corner reticle-bl"></div>
-        <div class="reticle-corner reticle-br"></div>
-
-        <!-- Camera Status / Error Overlay -->
-        <div id="cameraStatus" class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-20 bg-slate-950/80 backdrop-blur-sm hidden">
-          <div class="w-12 h-12 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 text-xl mb-2">
-            <i class="fa-solid fa-camera"></i>
-          </div>
-          <h3 class="text-xs font-bold text-white mb-1">Direct Phone Camera Mode</h3>
-          <p class="text-[11px] text-slate-400 max-w-xs mb-3">Tap the button below to snap directly from your phone's camera app with full auto-focus and HDR!</p>
-          <label for="directPhoneCapture" class="px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-600 text-slate-950 font-bold text-xs shadow-lg cursor-pointer active:scale-95 transition flex items-center gap-2">
-            <i class="fa-solid fa-camera-retro"></i> Open Phone Camera
-          </label>
-        </div>
-
-        <!-- Live Detected Counter Badge -->
-        <div class="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span id="viewfinderCounter">0 Lemons in frame</span>
-        </div>
-
-        <!-- Camera Flip Overlay Button -->
-        <div class="absolute bottom-3 right-3 z-20 flex gap-1.5">
-          <button id="flipCamBtn" class="w-8 h-8 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center text-xs active:scale-90 transition">
-            <i class="fa-solid fa-arrows-rotate"></i>
-          </button>
-        </div>
+      <!-- Live Stream Status Overlay -->
+      <div class="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-glow"></span>
+        <span id="viewfinderCounter">0 Lemons in frame</span>
       </div>
 
-      <!-- Main Action Buttons -->
-      <div class="flex gap-2">
-        <!-- Direct Native Camera Input (Works 100% on iOS & Android) -->
-        <label for="directPhoneCapture" class="flex-1 py-3.5 px-4 rounded-xl font-bold bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 active:scale-98 transition shadow-lg shadow-yellow-500/25 flex items-center justify-center gap-2 cursor-pointer text-sm">
-          <i class="fa-solid fa-camera text-base"></i>
-          <span>Snap with Phone Camera</span>
-        </label>
-        <input type="file" id="directPhoneCapture" accept="image/*" capture="environment" class="hidden">
-
-        <!-- Live Scan Loop Toggle -->
-        <button id="liveLoopToggle" class="px-4 rounded-xl glass border border-slate-700 text-slate-300 hover:text-white active:scale-95 transition flex flex-col items-center justify-center gap-0.5">
-          <i class="fa-solid fa-bolt text-yellow-400 text-xs"></i>
-          <span class="text-[9px] font-bold uppercase tracking-wider" id="liveLoopText">Live</span>
+      <!-- Reload / Fullscreen Actions -->
+      <div class="absolute bottom-3 right-3 z-20 flex gap-1.5">
+        <button id="refreshStreamBtn" title="Restart Stream" class="w-8 h-8 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center text-xs active:scale-90 transition hover:bg-black/80">
+          <i class="fa-solid fa-arrows-rotate"></i>
         </button>
-      </div>
-
-    </div>
-
-    <!-- Section 2: IP Webcam Stream Card (Hidden by default) -->
-    <div id="ipStreamSection" class="flex flex-col gap-3 hidden">
-      <div class="glass p-3 rounded-2xl flex flex-col gap-2.5">
-        <label class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-          <i class="fa-solid fa-link text-yellow-400 text-xs"></i> Phone IP Stream URL
-        </label>
-        <div class="flex gap-2">
-          <input type="text" id="ipInput" placeholder="http://100.124.130.179:8080/video" 
-                 value="http://100.124.130.179:8080/video"
-                 class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400">
-          <button id="connectIpBtn" class="px-4 py-2 rounded-xl bg-yellow-500 text-slate-950 font-bold text-xs hover:bg-yellow-400 transition active:scale-95">
-            Connect
-          </button>
-        </div>
-        <p class="text-[10px] text-slate-400">
-          💡 Open the <b>IP Webcam</b> app on your phone, click <b>Start Server</b>, and enter the IP shown on your screen with <code class="text-yellow-400">/video</code> at the end.
-        </p>
-      </div>
-
-      <!-- IP Stream Video Display -->
-      <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden glass border border-slate-800 shadow-2xl flex items-center justify-center bg-black/90">
-        <img id="ipStreamImage" class="w-full h-full object-cover hidden" alt="IP Stream Feed">
-        <div id="ipPlaceholder" class="flex flex-col items-center gap-2 text-slate-500 text-xs p-4 text-center">
-          <i class="fa-solid fa-video-slash text-2xl"></i>
-          <span>Click "Connect" to stream live with AI bounding boxes</span>
-        </div>
       </div>
     </div>
 
@@ -230,7 +148,7 @@
     <!-- Metrics Matrix Grid -->
     <div class="grid grid-cols-3 gap-2">
       <div class="glass p-3 rounded-xl text-center border-slate-800">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Detected</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Found</span>
         <span id="metricTotal" class="text-xl font-bold font-mono text-white mt-0.5 block">0</span>
       </div>
       <div class="glass p-3 rounded-xl text-center border-emerald-500/20 bg-emerald-500/5">
@@ -247,265 +165,126 @@
     <div class="glass rounded-2xl p-4 flex flex-col gap-2.5">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2">
         <h2 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-list-check text-yellow-400"></i> Lemon Analysis
+          <i class="fa-solid fa-list-check text-yellow-400"></i> Live Lemon Attributes
         </h2>
-        <span id="latencyDisplay" class="text-[10px] font-mono text-slate-400">-- ms</span>
+        <span id="latencyDisplay" class="text-[10px] font-mono text-emerald-400">FEED ACTIVE</span>
       </div>
 
       <div id="detectionDetailsList" class="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
         <div class="text-center py-6 text-xs text-slate-500 flex flex-col items-center gap-1.5">
-          <i class="fa-solid fa-eye text-lg text-slate-600"></i>
-          <span>Point camera or snap a lemon to see ripeness details</span>
+          <i class="fa-solid fa-lemon text-xl text-yellow-500/50"></i>
+          <span>Aim phone camera at a lemon to view ripeness & grade</span>
         </div>
       </div>
     </div>
 
   </main>
 
-  <!-- Hidden Processing Canvas -->
-  <canvas id="hiddenCanvas" class="hidden"></canvas>
-
   <script>
-    // Elements
-    const webVideo = document.getElementById('webVideo');
-    const annotatedSnapshot = document.getElementById('annotatedSnapshot');
-    const hiddenCanvas = document.getElementById('hiddenCanvas');
-    const laserScanner = document.getElementById('laserScanner');
-    const cameraStatus = document.getElementById('cameraStatus');
-    const directCapture = document.getElementById('directPhoneCapture');
-    const flipCamBtn = document.getElementById('flipCamBtn');
-    const liveLoopToggle = document.getElementById('liveLoopToggle');
-    const liveLoopText = document.getElementById('liveLoopText');
-    const viewfinderCounter = document.getElementById('viewfinderCounter');
-
-    const tabPhoneCam = document.getElementById('tabPhoneCam');
-    const tabIpStream = document.getElementById('tabIpStream');
-    const phoneCamSection = document.getElementById('phoneCamSection');
-    const ipStreamSection = document.getElementById('ipStreamSection');
-    const ipInput = document.getElementById('ipInput');
-    const connectIpBtn = document.getElementById('connectIpBtn');
-    const ipStreamImage = document.getElementById('ipStreamImage');
-    const ipPlaceholder = document.getElementById('ipPlaceholder');
+    const streamFeed = document.getElementById('liveStreamFeed');
+    const cameraSelect = document.getElementById('cameraSourceSelect');
+    const refreshBtn = document.getElementById('refreshStreamBtn');
 
     const harvestBanner = document.getElementById('harvestBanner');
     const metricTotal = document.getElementById('metricTotal');
     const metricPick = document.getElementById('metricPick');
     const metricWait = document.getElementById('metricWait');
     const detectionDetailsList = document.getElementById('detectionDetailsList');
-    const latencyDisplay = document.getElementById('latencyDisplay');
+    const viewfinderCounter = document.getElementById('viewfinderCounter');
 
-    let currentFacingMode = 'environment';
-    let isLiveActive = false;
-    let liveInterval = null;
-    let isProcessing = false;
-
-    // Tabs switching
-    tabPhoneCam.addEventListener('click', () => {
-      tabPhoneCam.className = "py-2 px-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-300 border border-yellow-500/30 transition flex items-center justify-center gap-1.5";
-      tabIpStream.className = "py-2 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5";
-      phoneCamSection.classList.remove('hidden');
-      ipStreamSection.classList.add('hidden');
-      ipStreamImage.src = "";
+    // Change camera source
+    cameraSelect.addEventListener('change', () => {
+      const selectedCam = cameraSelect.value;
+      streamFeed.src = `/api/video_feed?source=${selectedCam}&t=${Date.now()}`;
     });
 
-    tabIpStream.addEventListener('click', () => {
-      tabIpStream.className = "py-2 px-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-300 border border-yellow-500/30 transition flex items-center justify-center gap-1.5";
-      tabPhoneCam.className = "py-2 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5";
-      ipStreamSection.classList.remove('hidden');
-      phoneCamSection.classList.add('hidden');
-      stopLiveLoop();
+    // Refresh Stream button
+    refreshBtn.addEventListener('click', () => {
+      const selectedCam = cameraSelect.value;
+      streamFeed.src = `/api/video_feed?source=${selectedCam}&t=${Date.now()}`;
     });
 
-    // Start WebRTC In-Browser Camera
-    async function startWebCamera() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        cameraStatus.classList.remove('hidden');
-        return;
-      }
+    // Poll latest stats from Python backend every 400ms
+    async function pollStats() {
       try {
-        if (webVideo.srcObject) {
-          webVideo.srcObject.getTracks().forEach(t => t.stop());
-        }
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: currentFacingMode, width: { ideal: 640 } },
-          audio: false
-        });
-        webVideo.srcObject = stream;
-        cameraStatus.classList.add('hidden');
-        laserScanner.classList.remove('hidden');
-      } catch (err) {
-        console.warn('WebRTC camera not permitted on insecure origin or unsupported:', err);
-        cameraStatus.classList.remove('hidden');
-        laserScanner.classList.add('hidden');
-      }
-    }
-
-    // Direct Native Camera Snap (Works 100% on any mobile browser!)
-    directCapture.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const base64Data = event.target.result;
-        stopLiveLoop();
-        await sendImageForInference(base64Data);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // Send Image Frame to Python AI Server
-    async function sendImageForInference(base64Image) {
-      if (isProcessing) return;
-      isProcessing = true;
-      const startTime = performance.now();
-
-      try {
-        const res = await fetch('/api/predict', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64Image })
-        });
+        const res = await fetch('/api/stream_stats');
         const data = await res.json();
-        const latency = Math.round(performance.now() - startTime);
-        latencyDisplay.textContent = `${latency} ms`;
+        const summary = data.summary;
+        const detections = data.detections;
 
-        if (data.success) {
-          renderResults(data);
+        metricTotal.textContent = summary.total_lemons || 0;
+        metricPick.textContent = summary.harvestable || 0;
+        metricWait.textContent = summary.not_ready || 0;
+        viewfinderCounter.textContent = `${summary.total_lemons || 0} Lemons in frame`;
+
+        // Update Harvest Decision Banner
+        if (summary.total_lemons > 0) {
+          harvestBanner.classList.remove('hidden');
+          if (summary.harvestable > 0) {
+            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-green bg-emerald-950/40 border border-emerald-500/40';
+            harvestBanner.innerHTML = `
+              <div class="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm tracking-wide uppercase">
+                <i class="fa-solid fa-circle-check text-base"></i> Harvest Recommended
+              </div>
+              <p class="text-xs text-emerald-200/80 mt-1">${summary.harvestable} Lemon(s) ready to pick!</p>
+            `;
+          } else {
+            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-gold bg-amber-950/40 border border-amber-500/40';
+            harvestBanner.innerHTML = `
+              <div class="flex items-center justify-center gap-2 text-amber-400 font-bold text-sm tracking-wide uppercase">
+                <i class="fa-solid fa-hourglass-half text-base"></i> Not Ready for Picking
+              </div>
+              <p class="text-xs text-amber-200/80 mt-1">Lemons are still raw or semi-ripe.</p>
+            `;
+          }
+        } else {
+          harvestBanner.classList.add('hidden');
         }
-      } catch (err) {
-        console.error('Inference error:', err);
-      } finally {
-        isProcessing = false;
-      }
-    }
 
-    // Render Detection & Classification Output
-    function renderResults(data) {
-      const summary = data.summary;
-      const detections = data.detections;
-
-      metricTotal.textContent = summary.total_lemons;
-      metricPick.textContent = summary.harvestable;
-      metricWait.textContent = summary.not_ready;
-      viewfinderCounter.textContent = `${summary.total_lemons} Lemons in frame`;
-
-      // Harvest Banner
-      if (summary.total_lemons > 0) {
-        harvestBanner.classList.remove('hidden');
-        if (summary.harvestable > 0) {
-          harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-green bg-emerald-950/40 border border-emerald-500/40';
-          harvestBanner.innerHTML = `
-            <div class="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm tracking-wide uppercase">
-              <i class="fa-solid fa-circle-check text-base"></i> Harvest Recommended
+        // Update Detections List
+        if (!detections || detections.length === 0) {
+          detectionDetailsList.innerHTML = `
+            <div class="text-center py-6 text-xs text-slate-500 flex flex-col items-center gap-1.5">
+              <i class="fa-solid fa-lemon text-xl text-yellow-500/50"></i>
+              <span>Aim phone camera at a lemon to view ripeness & grade</span>
             </div>
-            <p class="text-xs text-emerald-200/80 mt-1">${summary.harvestable} Lemon(s) meet market ripeness & size criteria!</p>
           `;
         } else {
-          harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-gold bg-amber-950/40 border border-amber-500/40';
-          harvestBanner.innerHTML = `
-            <div class="flex items-center justify-center gap-2 text-amber-400 font-bold text-sm tracking-wide uppercase">
-              <i class="fa-solid fa-hourglass-half text-base"></i> Not Ready for Picking
-            </div>
-            <p class="text-xs text-amber-200/80 mt-1">Lemons are still raw or semi-ripe. Wait before harvesting.</p>
-          `;
-        }
-      } else {
-        harvestBanner.classList.add('hidden');
-      }
+          detectionDetailsList.innerHTML = detections.map((d, i) => {
+            const isRipe = d.ripeness === 'ripe';
+            const isSemi = d.ripeness === 'semi_ripe';
+            const badgeClass = isRipe ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' :
+                               isSemi ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' :
+                               'bg-red-500/20 text-red-400 border-red-500/40';
 
-      // Detection Detail Cards
-      if (detections.length === 0) {
-        detectionDetailsList.innerHTML = `<div class="text-center py-6 text-xs text-slate-500">No lemons detected in this frame.</div>`;
-      } else {
-        detectionDetailsList.innerHTML = detections.map((d, i) => {
-          const isRipe = d.ripeness === 'ripe';
-          const isSemi = d.ripeness === 'semi_ripe';
-          const badgeClass = isRipe ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' :
-                             isSemi ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' :
-                             'bg-red-500/20 text-red-400 border-red-500/40';
+            const harvestAction = d.harvest
+              ? `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 shadow-md">PICK ✓</span>`
+              : `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">SKIP ✗</span>`;
 
-          const harvestAction = d.harvest
-            ? `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 shadow-md">PICK ✓</span>`
-            : `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">SKIP ✗</span>`;
-
-          return `
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs hover:border-slate-700 transition">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-300 font-mono font-bold flex items-center justify-center text-[10px]">#${i + 1}</span>
-                <div class="flex flex-col">
-                  <div class="flex items-center gap-1.5">
-                    <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] border ${badgeClass}">${d.ripeness}</span>
-                    <span class="text-slate-400 text-[10px] uppercase font-mono">${d.size} · ${d.quality}</span>
+            return `
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs hover:border-slate-700 transition">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-300 font-mono font-bold flex items-center justify-center text-[10px]">#${i + 1}</span>
+                  <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] border ${badgeClass}">${d.ripeness}</span>
+                      <span class="text-slate-400 text-[10px] uppercase font-mono">${d.size} · ${d.quality}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 mt-0.5">Confidence: ${Math.round(d.ripeness_confidence * 100)}%</span>
                   </div>
-                  <span class="text-[10px] text-slate-500 mt-0.5">Confidence: ${Math.round(d.ripeness_confidence * 100)}%</span>
                 </div>
+                <div>${harvestAction}</div>
               </div>
-              <div>${harvestAction}</div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      // Show annotated overlay
-      if (data.annotated_image) {
-        annotatedSnapshot.src = data.annotated_image;
-        annotatedSnapshot.classList.remove('hidden');
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        // Silently continue polling
       }
     }
 
-    // IP Camera Stream Connection
-    connectIpBtn.addEventListener('click', () => {
-      const url = ipInput.value.trim();
-      if (!url) return;
-      ipPlaceholder.classList.add('hidden');
-      ipStreamImage.classList.remove('hidden');
-      ipStreamImage.src = `/api/video_feed?source=${encodeURIComponent(url)}`;
-    });
-
-    // Flip Camera
-    flipCamBtn.addEventListener('click', () => {
-      currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
-      startWebCamera();
-    });
-
-    // Toggle Live Loop
-    liveLoopToggle.addEventListener('click', () => {
-      isLiveActive = !isLiveActive;
-      if (isLiveActive) {
-        liveLoopText.textContent = "Stop";
-        liveLoopToggle.classList.add('glass-glow-gold');
-        annotatedSnapshot.classList.add('hidden');
-        startLiveLoop();
-      } else {
-        liveLoopText.textContent = "Live";
-        liveLoopToggle.classList.remove('glass-glow-gold');
-        stopLiveLoop();
-      }
-    });
-
-    function startLiveLoop() {
-      if (liveInterval) clearInterval(liveInterval);
-      liveInterval = setInterval(async () => {
-        if (!webVideo.videoWidth) return;
-        hiddenCanvas.width = webVideo.videoWidth;
-        hiddenCanvas.height = webVideo.videoHeight;
-        const ctx = hiddenCanvas.getContext('2d');
-        ctx.drawImage(webVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
-        const frameData = hiddenCanvas.toDataURL('image/jpeg', 0.7);
-        await sendImageForInference(frameData);
-      }, 350);
-    }
-
-    function stopLiveLoop() {
-      if (liveInterval) clearInterval(liveInterval);
-      isLiveActive = false;
-    }
-
-    // Start
-    window.addEventListener('DOMContentLoaded', () => {
-      startWebCamera();
-    });
+    // Start polling loop
+    setInterval(pollStats, 400);
   </script>
 </body>
 </html>

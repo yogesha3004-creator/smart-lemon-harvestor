@@ -37,6 +37,10 @@ CORS(app)
 
 # Initialize AI Pipeline
 pipeline: LemonHarvestPipeline | None = None
+latest_stream_stats = {
+    "summary": {"total_lemons": 0, "harvestable": 0, "not_ready": 0},
+    "detections": []
+}
 
 
 def get_pipeline() -> LemonHarvestPipeline:
@@ -184,6 +188,8 @@ def video_feed():
                 # Run AI pipeline every 3rd frame to optimize latency
                 if frame_count % 3 == 0 or last_results is None:
                     last_results = pipe.process_image(frame)
+                    latest_stream_stats["summary"] = last_results["summary"]
+                    latest_stream_stats["detections"] = last_results["detections"]
 
                 annotated = draw_pipeline_results(frame, last_results)
                 ret, buffer = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
@@ -202,6 +208,12 @@ def video_feed():
     return Response(
         generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
     )
+
+
+@app.route("/api/stream_stats")
+def stream_stats():
+    """Return the latest stats from the active live video stream."""
+    return jsonify(latest_stream_stats)
 
 
 def run_server(host: str = "0.0.0.0", port: int = 5000):
