@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🍋 Smart Lemon Harvester AI — Live Vision</title>
+  <title>🍋 Smart Lemon Harvester AI — CyberAgri Vision</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
     body {
-      background: radial-gradient(circle at top right, #0d2818 0%, #070d19 45%, #030712 100%);
+      background: radial-gradient(circle at top right, #092015 0%, #070d19 40%, #020617 100%);
       color: #f1f5f9;
       font-family: 'Space Grotesk', -apple-system, sans-serif;
       min-height: 100vh;
@@ -22,29 +22,34 @@
     }
 
     .glass {
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.82);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
 
     .glass-glow-green {
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.6);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.25);
     }
 
     .glass-glow-gold {
-      border: 1px solid rgba(250, 204, 21, 0.5);
+      border: 1px solid rgba(250, 204, 21, 0.6);
       box-shadow: 0 0 30px rgba(250, 204, 21, 0.25);
     }
 
-    /* Cyber Viewfinder Reticle */
+    .glass-glow-blue {
+      border: 1px solid rgba(6, 182, 212, 0.6);
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Cyber Viewfinder Reticle Brackets */
     .reticle-corner {
       position: absolute;
       width: 22px;
       height: 22px;
-      border-color: rgba(250, 204, 21, 0.85);
+      border-color: rgba(250, 204, 21, 0.9);
       pointer-events: none;
     }
     .reticle-tl { top: 12px; left: 12px; border-top: 2.5px solid; border-left: 2.5px solid; }
@@ -52,13 +57,13 @@
     .reticle-bl { bottom: 12px; left: 12px; border-bottom: 2.5px solid; border-left: 2.5px solid; }
     .reticle-br { bottom: 12px; right: 12px; border-bottom: 2.5px solid; border-right: 2.5px solid; }
 
-    /* Animated Scanning Laser */
+    /* Animated Laser Scanner Sweep */
     .scan-laser {
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent, #10b981, #facc15, transparent);
-      box-shadow: 0 0 14px #10b981;
+      background: linear-gradient(90deg, transparent, #10b981, #facc15, #06b6d4, transparent);
+      box-shadow: 0 0 16px #10b981;
       animation: scan 2.5s ease-in-out infinite alternate;
       pointer-events: none;
     }
@@ -70,40 +75,43 @@
     }
 
     .pulse-glow {
-      animation: pulse 2s infinite;
+      animation: pulse 1.8s infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.15); }
+      50% { opacity: 0.4; transform: scale(1.2); }
     }
   </style>
 </head>
 <body class="flex flex-col pb-8">
 
-  <!-- Top App Bar -->
+  <!-- Top App Navigation -->
   <header class="glass sticky top-0 z-40 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
     <div class="flex items-center gap-2.5">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-xl shadow-lg shadow-yellow-500/20">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-xl shadow-lg shadow-yellow-500/25">
         🍋
       </div>
       <div>
         <div class="flex items-center gap-1.5">
           <h1 class="text-sm font-bold tracking-tight text-white uppercase">Lemon Harvester AI</h1>
-          <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">LIVE</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AI PRO</span>
         </div>
         <p class="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block pulse-glow"></span>
-          YOLOv8 + EfficientNet
+          Target Verification & Safety System
         </p>
       </div>
     </div>
 
-    <!-- Camera Source Selector -->
-    <div class="flex items-center gap-2">
-      <select id="cameraSourceSelect" class="bg-slate-900 border border-slate-700 text-xs font-semibold rounded-xl px-2.5 py-1.5 text-yellow-300 focus:outline-none focus:border-yellow-400">
-        <option value="2" selected>📱 Phone Camera (Iriun - Cam 2)</option>
-        <option value="0">💻 Laptop Webcam (Cam 0)</option>
+    <!-- Quick Audio & Cam Switcher -->
+    <div class="flex items-center gap-1.5">
+      <button id="sfxToggleBtn" title="Toggle Audio Chimes" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-yellow-400 hover:text-yellow-300 text-xs active:scale-95 transition">
+        <i class="fa-solid fa-volume-high" id="sfxIcon"></i>
+      </button>
+      <select id="cameraSourceSelect" class="bg-slate-900 border border-slate-700 text-xs font-semibold rounded-xl px-2 py-1.5 text-yellow-300 focus:outline-none focus:border-yellow-400">
+        <option value="2" selected>📱 Phone (Iriun)</option>
+        <option value="0">💻 Laptop Cam</option>
       </select>
     </div>
   </header>
@@ -111,69 +119,92 @@
   <!-- Main Container -->
   <main class="flex-1 flex flex-col px-4 pt-3 max-w-md mx-auto w-full gap-3">
 
-    <!-- Viewfinder Container -->
+    <!-- Target Verification Status Pill -->
+    <div id="targetVerificationPill" class="glass px-3.5 py-2.5 rounded-2xl flex items-center justify-between border-slate-700 transition-all duration-300">
+      <div class="flex items-center gap-2">
+        <span id="targetStatusDot" class="w-3 h-3 rounded-full bg-yellow-400 pulse-glow inline-block"></span>
+        <div class="flex flex-col">
+          <span class="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-semibold">Scene Recognition</span>
+          <span id="targetStatusText" class="text-xs font-bold text-yellow-400 tracking-wide uppercase">Searching Target...</span>
+        </div>
+      </div>
+      <div id="safetyBadge" class="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-400 font-bold">
+        ARM: SAFE
+      </div>
+    </div>
+
+    <!-- Viewfinder Viewport -->
     <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden glass border border-slate-800 shadow-2xl flex items-center justify-center bg-black/90">
       
-      <!-- Live Stream MJPEG Image (Direct from Python Backend) -->
-      <img id="liveStreamFeed" src="/api/video_feed?source=2" class="w-full h-full object-cover" alt="Live AI Detection Feed">
+      <!-- Video Stream Image from Python backend -->
+      <img id="liveStreamFeed" src="/api/video_feed?source=2" class="w-full h-full object-cover" alt="Live AI Stream">
 
-      <!-- Laser Scanner Effect -->
+      <!-- Laser Scanner Line -->
       <div class="scan-laser"></div>
 
-      <!-- Targeting Reticle Brackets -->
+      <!-- Sci-Fi Reticle Brackets -->
       <div class="reticle-corner reticle-tl"></div>
       <div class="reticle-corner reticle-tr"></div>
       <div class="reticle-corner reticle-bl"></div>
       <div class="reticle-corner reticle-br"></div>
 
-      <!-- Live Stream Status Overlay -->
-      <div class="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5">
+      <!-- Live Stream HUD Badge -->
+      <div class="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-glow"></span>
-        <span id="viewfinderCounter">0 Lemons in frame</span>
+        <span id="viewfinderCounter">0 Targets Identified</span>
       </div>
 
-      <!-- Reload / Fullscreen Actions -->
+      <!-- Reload Stream Button -->
       <div class="absolute bottom-3 right-3 z-20 flex gap-1.5">
-        <button id="refreshStreamBtn" title="Restart Stream" class="w-8 h-8 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center text-xs active:scale-90 transition hover:bg-black/80">
+        <button id="refreshStreamBtn" title="Restart Stream" class="w-8 h-8 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-white flex items-center justify-center text-xs active:scale-90 transition hover:bg-black/90">
           <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
     </div>
 
-    <!-- Harvest Decision Banner (Dynamic Glow) -->
+    <!-- Dynamic Harvest Decision Banner -->
     <div id="harvestBanner" class="p-3.5 rounded-2xl text-center hidden transition-all duration-300">
-      <!-- Populated via JS -->
+      <!-- Injected via JS -->
     </div>
 
-    <!-- Metrics Matrix Grid -->
+    <!-- 3-Column Metrics Matrix -->
     <div class="grid grid-cols-3 gap-2">
-      <div class="glass p-3 rounded-xl text-center border-slate-800">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Found</span>
-        <span id="metricTotal" class="text-xl font-bold font-mono text-white mt-0.5 block">0</span>
+      <!-- Lemons Count -->
+      <div class="glass p-3 rounded-xl text-center border-yellow-500/20 bg-yellow-500/5">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-yellow-400 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-lemon text-xs"></i> Lemons
+        </span>
+        <span id="metricLemons" class="text-xl font-bold font-mono text-white mt-0.5 block">0</span>
       </div>
+      <!-- Harvest Ready -->
       <div class="glass p-3 rounded-xl text-center border-emerald-500/20 bg-emerald-500/5">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Ready to Pick</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-check-circle text-xs"></i> Ready
+        </span>
         <span id="metricPick" class="text-xl font-bold font-mono text-emerald-400 mt-0.5 block">0</span>
       </div>
-      <div class="glass p-3 rounded-xl text-center border-amber-500/20 bg-amber-500/5">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Ripening</span>
-        <span id="metricWait" class="text-xl font-bold font-mono text-amber-400 mt-0.5 block">0</span>
+      <!-- Humans / Objects -->
+      <div class="glass p-3 rounded-xl text-center border-cyan-500/20 bg-cyan-500/5">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-user-shield text-xs"></i> Safety
+        </span>
+        <span id="metricSafety" class="text-xl font-bold font-mono text-cyan-400 mt-0.5 block">0</span>
       </div>
     </div>
 
-    <!-- Detected Lemons Detail Card -->
+    <!-- Detailed Identification Feed Card -->
     <div class="glass rounded-2xl p-4 flex flex-col gap-2.5">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2">
         <h2 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-list-check text-yellow-400"></i> Live Lemon Attributes
+          <i class="fa-solid fa-microchip text-yellow-400"></i> Target Verification Feed
         </h2>
         <span id="latencyDisplay" class="text-[10px] font-mono text-emerald-400">FEED ACTIVE</span>
       </div>
 
-      <div id="detectionDetailsList" class="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
+      <div id="detectionDetailsList" class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
         <div class="text-center py-6 text-xs text-slate-500 flex flex-col items-center gap-1.5">
-          <i class="fa-solid fa-lemon text-xl text-yellow-500/50"></i>
-          <span>Aim phone camera at a lemon to view ripeness & grade</span>
+          <i class="fa-solid fa-radar text-xl text-slate-600"></i>
+          <span>Scanning camera stream for lemons, operators, or objects...</span>
         </div>
       </div>
     </div>
@@ -184,55 +215,139 @@
     const streamFeed = document.getElementById('liveStreamFeed');
     const cameraSelect = document.getElementById('cameraSourceSelect');
     const refreshBtn = document.getElementById('refreshStreamBtn');
+    const sfxBtn = document.getElementById('sfxToggleBtn');
+    const sfxIcon = document.getElementById('sfxIcon');
+
+    const targetVerificationPill = document.getElementById('targetVerificationPill');
+    const targetStatusDot = document.getElementById('targetStatusDot');
+    const targetStatusText = document.getElementById('targetStatusText');
+    const safetyBadge = document.getElementById('safetyBadge');
 
     const harvestBanner = document.getElementById('harvestBanner');
-    const metricTotal = document.getElementById('metricTotal');
+    const metricLemons = document.getElementById('metricLemons');
     const metricPick = document.getElementById('metricPick');
-    const metricWait = document.getElementById('metricWait');
+    const metricSafety = document.getElementById('metricSafety');
     const detectionDetailsList = document.getElementById('detectionDetailsList');
     const viewfinderCounter = document.getElementById('viewfinderCounter');
 
-    // Change camera source
+    let sfxEnabled = true;
+    let audioCtx = null;
+    let lastSceneStatus = "";
+
+    // Web Audio API Sci-Fi Lock-On Beep
+    function playSciFiChime(type) {
+      if (!sfxEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'lemon') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+          osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.12);
+        } else if (type === 'human') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+          osc.frequency.linearRampToValueAtTime(220, audioCtx.currentTime + 0.18);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.18);
+        }
+      } catch (e) {}
+    }
+
+    sfxBtn.addEventListener('click', () => {
+      sfxEnabled = !sfxEnabled;
+      sfxIcon.className = sfxEnabled ? "fa-solid fa-volume-high" : "fa-solid fa-volume-xmark text-slate-500";
+    });
+
     cameraSelect.addEventListener('change', () => {
-      const selectedCam = cameraSelect.value;
-      streamFeed.src = `/api/video_feed?source=${selectedCam}&t=${Date.now()}`;
+      streamFeed.src = `/api/video_feed?source=${cameraSelect.value}&t=${Date.now()}`;
     });
 
-    // Refresh Stream button
     refreshBtn.addEventListener('click', () => {
-      const selectedCam = cameraSelect.value;
-      streamFeed.src = `/api/video_feed?source=${selectedCam}&t=${Date.now()}`;
+      streamFeed.src = `/api/video_feed?source=${cameraSelect.value}&t=${Date.now()}`;
     });
 
-    // Poll latest stats from Python backend every 400ms
+    // Poll stats from backend
     async function pollStats() {
       try {
         const res = await fetch('/api/stream_stats');
         const data = await res.json();
-        const summary = data.summary;
-        const detections = data.detections;
+        const summary = data.summary || {};
+        const detections = data.detections || [];
 
-        metricTotal.textContent = summary.total_lemons || 0;
-        metricPick.textContent = summary.harvestable || 0;
-        metricWait.textContent = summary.not_ready || 0;
-        viewfinderCounter.textContent = `${summary.total_lemons || 0} Lemons in frame`;
+        const totalLemons = summary.total_lemons || 0;
+        const harvestable = summary.harvestable || 0;
+        const humansCount = summary.humans_count || 0;
+        const objectsCount = summary.objects_count || 0;
+        const sceneStatus = summary.scene_status || "SCANNING";
 
-        // Update Harvest Decision Banner
-        if (summary.total_lemons > 0) {
+        // Update Matrix Counters
+        metricLemons.textContent = totalLemons;
+        metricPick.textContent = harvestable;
+        metricSafety.textContent = humansCount > 0 ? `${humansCount} HUMAN` : (objectsCount > 0 ? `${objectsCount} OBJ` : "SAFE");
+        viewfinderCounter.textContent = `${detections.length} Target(s) in frame`;
+
+        // 1. Scene Recognition Pill (Top Bar)
+        if (sceneStatus === "HUMAN_ALERT") {
+          targetVerificationPill.className = "glass glass-glow-blue px-3.5 py-2.5 rounded-2xl flex items-center justify-between bg-cyan-950/40 border-cyan-400";
+          targetStatusDot.className = "w-3 h-3 rounded-full bg-cyan-400 pulse-glow inline-block";
+          targetStatusText.className = "text-xs font-bold text-cyan-300 tracking-wide uppercase";
+          targetStatusText.textContent = `👤 Operator in View (${humansCount})`;
+          safetyBadge.className = "px-2 py-1 rounded-lg bg-cyan-500/20 border border-cyan-400 text-[10px] font-mono text-cyan-300 font-bold";
+          safetyBadge.textContent = "ARM: HOLD";
+          if (lastSceneStatus !== "HUMAN_ALERT") playSciFiChime('human');
+        } else if (sceneStatus === "LEMON_TARGET") {
+          targetVerificationPill.className = "glass glass-glow-green px-3.5 py-2.5 rounded-2xl flex items-center justify-between bg-emerald-950/40 border-emerald-400";
+          targetStatusDot.className = "w-3 h-3 rounded-full bg-emerald-400 pulse-glow inline-block";
+          targetStatusText.className = "text-xs font-bold text-emerald-300 tracking-wide uppercase";
+          targetStatusText.textContent = `🍋 Target Verified: ${totalLemons} Lemon(s)`;
+          safetyBadge.className = "px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400 text-[10px] font-mono text-emerald-300 font-bold";
+          safetyBadge.textContent = "ARM: READY";
+          if (lastSceneStatus !== "LEMON_TARGET") playSciFiChime('lemon');
+        } else if (sceneStatus === "OBJECT_DETECTED") {
+          targetVerificationPill.className = "glass px-3.5 py-2.5 rounded-2xl flex items-center justify-between bg-slate-900/60 border-slate-700";
+          targetStatusDot.className = "w-3 h-3 rounded-full bg-slate-400 inline-block";
+          targetStatusText.className = "text-xs font-bold text-slate-300 tracking-wide uppercase";
+          targetStatusText.textContent = `📦 Non-Harvest Object (${objectsCount})`;
+          safetyBadge.className = "px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 font-bold";
+          safetyBadge.textContent = "ARM: STANDBY";
+        } else {
+          targetVerificationPill.className = "glass px-3.5 py-2.5 rounded-2xl flex items-center justify-between border-slate-800";
+          targetStatusDot.className = "w-3 h-3 rounded-full bg-yellow-400 pulse-glow inline-block";
+          targetStatusText.className = "text-xs font-bold text-yellow-400 tracking-wide uppercase";
+          targetStatusText.textContent = "Scanning Harvest Zone...";
+          safetyBadge.className = "px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 font-bold";
+          safetyBadge.textContent = "ARM: SAFE";
+        }
+
+        lastSceneStatus = sceneStatus;
+
+        // 2. Harvest Decision Banner
+        if (totalLemons > 0) {
           harvestBanner.classList.remove('hidden');
-          if (summary.harvestable > 0) {
-            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-green bg-emerald-950/40 border border-emerald-500/40';
+          if (harvestable > 0) {
+            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-green bg-emerald-950/50 border border-emerald-500/40';
             harvestBanner.innerHTML = `
               <div class="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm tracking-wide uppercase">
-                <i class="fa-solid fa-circle-check text-base"></i> Harvest Recommended
+                <i class="fa-solid fa-circle-check text-base"></i> Harvest Command: PICK
               </div>
-              <p class="text-xs text-emerald-200/80 mt-1">${summary.harvestable} Lemon(s) ready to pick!</p>
+              <p class="text-xs text-emerald-200/80 mt-1">${harvestable} Lemon(s) ready for commercial harvesting!</p>
             `;
           } else {
-            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-gold bg-amber-950/40 border border-amber-500/40';
+            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-gold bg-amber-950/50 border border-amber-500/40';
             harvestBanner.innerHTML = `
               <div class="flex items-center justify-center gap-2 text-amber-400 font-bold text-sm tracking-wide uppercase">
-                <i class="fa-solid fa-hourglass-half text-base"></i> Not Ready for Picking
+                <i class="fa-solid fa-hourglass-half text-base"></i> Harvest Command: WAIT
               </div>
               <p class="text-xs text-amber-200/80 mt-1">Lemons are still raw or semi-ripe.</p>
             `;
@@ -241,16 +356,53 @@
           harvestBanner.classList.add('hidden');
         }
 
-        // Update Detections List
-        if (!detections || detections.length === 0) {
+        // 3. Detailed Target Verification Breakdown
+        if (detections.length === 0) {
           detectionDetailsList.innerHTML = `
             <div class="text-center py-6 text-xs text-slate-500 flex flex-col items-center gap-1.5">
-              <i class="fa-solid fa-lemon text-xl text-yellow-500/50"></i>
-              <span>Aim phone camera at a lemon to view ripeness & grade</span>
+              <i class="fa-solid fa-radar text-xl text-slate-600"></i>
+              <span>Scanning camera stream for lemons, operators, or objects...</span>
             </div>
           `;
         } else {
           detectionDetailsList.innerHTML = detections.map((d, i) => {
+            const type = d.target_type || "lemon";
+
+            if (type === "human") {
+              return `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-cyan-500/20 text-cyan-400 font-mono font-bold flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-user"></i>
+                    </span>
+                    <div class="flex flex-col">
+                      <span class="font-bold text-cyan-300">Human / Operator</span>
+                      <span class="text-[10px] text-cyan-400/80">Safety Interlock: Robot Arm Inactive</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">OPERATOR</span>
+                </div>
+              `;
+            }
+
+            if (type === "object") {
+              return `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-400 font-mono font-bold flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-box"></i>
+                    </span>
+                    <div class="flex flex-col">
+                      <span class="font-bold text-slate-300 capitalize">${d.class_name}</span>
+                      <span class="text-[10px] text-slate-500">Non-Harvest Target (Ignored)</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">OBJECT</span>
+                </div>
+              `;
+            }
+
+            // Lemon Target
             const isRipe = d.ripeness === 'ripe';
             const isSemi = d.ripeness === 'semi_ripe';
             const badgeClass = isRipe ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' :
@@ -264,10 +416,10 @@
             return `
               <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs hover:border-slate-700 transition">
                 <div class="flex items-center gap-2">
-                  <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-300 font-mono font-bold flex items-center justify-center text-[10px]">#${i + 1}</span>
+                  <span class="w-6 h-6 rounded-md bg-yellow-500/20 text-yellow-400 font-mono font-bold flex items-center justify-center text-[10px]">#${i + 1}</span>
                   <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                      <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] border ${badgeClass}">${d.ripeness}</span>
+                      <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] border ${badgeClass}">🍋 ${d.ripeness}</span>
                       <span class="text-slate-400 text-[10px] uppercase font-mono">${d.size} · ${d.quality}</span>
                     </div>
                     <span class="text-[10px] text-slate-500 mt-0.5">Confidence: ${Math.round(d.ripeness_confidence * 100)}%</span>
@@ -278,13 +430,11 @@
             `;
           }).join('');
         }
-      } catch (err) {
-        // Silently continue polling
-      }
+
+      } catch (e) {}
     }
 
-    // Start polling loop
-    setInterval(pollStats, 400);
+    setInterval(pollStats, 350);
   </script>
 </body>
 </html>

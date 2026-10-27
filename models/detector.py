@@ -116,16 +116,34 @@ class LemonDetector:
             boxes = result.boxes
             if boxes is not None:
                 for box in boxes:
+                    cls_id = int(box.cls[0].cpu().numpy())
+                    conf = float(box.conf[0].cpu().numpy())
+                    raw_name = result.names.get(cls_id, "unknown") if hasattr(result, "names") else "unknown"
+                    
+                    # Target classification logic:
+                    # 1. Human / Operator Detection
+                    if raw_name in ["person", "human"]:
+                        target_type = "human"
+                        display_name = "Human / Operator"
+                    # 2. Lemon / Citrus / Fruit Detection
+                    elif raw_name in ["lemon", "orange", "apple", "banana"]:
+                        target_type = "lemon"
+                        display_name = "lemon"
+                    # 3. Other Non-Harvest Object Detection
+                    else:
+                        target_type = "object"
+                        display_name = raw_name
+
                     det = {
                         "bbox": box.xyxy[0].cpu().numpy().tolist(),
-                        "confidence": float(box.conf[0].cpu().numpy()),
-                        "class_name": self.CLASS_NAMES[int(box.cls[0].cpu().numpy())]
-                        if int(box.cls[0].cpu().numpy()) < len(self.CLASS_NAMES)
-                        else "unknown",
+                        "confidence": conf,
+                        "class_name": display_name,
+                        "raw_class": raw_name,
+                        "target_type": target_type,
                     }
                     detections.append(det)
         
-        logger.info(f"Found {len(detections)} lemon(s)")
+        logger.info(f"Detections: {len(detections)} item(s) found")
         return detections
 
     def evaluate(

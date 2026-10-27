@@ -224,6 +224,59 @@ def draw_pipeline_results(
             continue
 
         # Extract attributes
+        target_type = det.get("target_type", "lemon")
+        class_name = det.get("class_name", "lemon")
+        conf = det.get("detection_confidence", 0.0)
+
+        # ----------------------------------------------------
+        # BRANCH 1: Human / Operator
+        # ----------------------------------------------------
+        if target_type == "human":
+            color = (255, 200, 0)  # Neon Cyan / Sky Blue
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness=box_thick, lineType=cv2.LINE_AA)
+            line1 = f"HUMAN / OPERATOR ({conf*100:.0f}%)"
+            line2 = "SAFETY INTERLOCK: HOLD"
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            (w1, h1), b1 = cv2.getTextSize(line1, font, font_scale, text_thick)
+            (w2, h2), b2 = cv2.getTextSize(line2, font, font_scale * 0.85, max(1, text_thick - 1))
+            banner_w = max(w1, w2) + 12
+            banner_h = h1 + h2 + b1 + b2 + 14
+            banner_y1 = max(0, y1 - banner_h)
+            banner_y2 = y1 if y1 - banner_h >= 0 else min(h, y1 + banner_h)
+            banner_x2 = min(w, x1 + banner_w)
+            sub_img = annotated[banner_y1:banner_y2, x1:banner_x2]
+            dark_bg = np.full_like(sub_img, (30, 20, 10))
+            cv2.addWeighted(sub_img, 0.25, dark_bg, 0.75, 0, sub_img)
+            cv2.putText(annotated, line1, (x1 + 6, banner_y1 + h1 + 4), font, font_scale, color, text_thick, cv2.LINE_AA)
+            cv2.putText(annotated, line2, (x1 + 6, banner_y1 + h1 + h2 + b1 + 8), font, font_scale * 0.85, (200, 240, 255), max(1, text_thick - 1), cv2.LINE_AA)
+            continue
+
+        # ----------------------------------------------------
+        # BRANCH 2: Non-Harvest Object (cup, phone, etc.)
+        # ----------------------------------------------------
+        if target_type == "object":
+            color = (180, 140, 140)  # Slate / Muted Lavender
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness=box_thick, lineType=cv2.LINE_AA)
+            line1 = f"OBJECT: {class_name.upper()}"
+            line2 = "NON-HARVEST TARGET (IGNORED)"
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            (w1, h1), b1 = cv2.getTextSize(line1, font, font_scale, text_thick)
+            (w2, h2), b2 = cv2.getTextSize(line2, font, font_scale * 0.82, max(1, text_thick - 1))
+            banner_w = max(w1, w2) + 12
+            banner_h = h1 + h2 + b1 + b2 + 14
+            banner_y1 = max(0, y1 - banner_h)
+            banner_y2 = y1 if y1 - banner_h >= 0 else min(h, y1 + banner_h)
+            banner_x2 = min(w, x1 + banner_w)
+            sub_img = annotated[banner_y1:banner_y2, x1:banner_x2]
+            dark_bg = np.full_like(sub_img, (25, 25, 25))
+            cv2.addWeighted(sub_img, 0.25, dark_bg, 0.75, 0, sub_img)
+            cv2.putText(annotated, line1, (x1 + 6, banner_y1 + h1 + 4), font, font_scale, (230, 230, 230), text_thick, cv2.LINE_AA)
+            cv2.putText(annotated, line2, (x1 + 6, banner_y1 + h1 + h2 + b1 + 8), font, font_scale * 0.82, color, max(1, text_thick - 1), cv2.LINE_AA)
+            continue
+
+        # ----------------------------------------------------
+        # BRANCH 3: Lemon Target (Harvest Verified)
+        # ----------------------------------------------------
         ripeness = str(det.get("ripeness", "unknown")).lower()
         ripeness_conf = det.get("ripeness_confidence")
         quality = str(det.get("quality", "n/a"))

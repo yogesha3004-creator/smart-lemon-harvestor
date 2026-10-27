@@ -106,13 +106,50 @@ class LemonHarvestPipeline:
         # Stage 1: Detect lemons
         detections = self.detector.predict(img)
         
-        # Stage 2 & 3: Classify each detection and make harvest decision
+        # Stage 2 & 3: Process detections by target type (lemon, human, object)
         results = []
         for det in detections:
             bbox = det["bbox"]
+            target_type = det.get("target_type", "lemon")
+            class_name = det.get("class_name", "lemon")
+            conf = det.get("confidence", 0.0)
+
+            # If it's a Human / Operator
+            if target_type == "human":
+                results.append({
+                    "bbox": bbox,
+                    "target_type": "human",
+                    "class_name": class_name,
+                    "detection_confidence": conf,
+                    "harvest": False,
+                    "ripeness": "n/a",
+                    "ripeness_confidence": 0.0,
+                    "quality": "human",
+                    "quality_confidence": 0.0,
+                    "size": "n/a",
+                    "status_note": "Human Operator in Frame - Safety Hold",
+                })
+                continue
+
+            # If it's a Non-Harvest Object (phone, cup, chair, etc.)
+            elif target_type == "object":
+                results.append({
+                    "bbox": bbox,
+                    "target_type": "object",
+                    "class_name": class_name,
+                    "detection_confidence": conf,
+                    "harvest": False,
+                    "ripeness": "n/a",
+                    "ripeness_confidence": 0.0,
+                    "quality": "object",
+                    "quality_confidence": 0.0,
+                    "size": "n/a",
+                    "status_note": f"Non-Harvest Object ({class_name})",
+                })
+                continue
+
+            # Target is a Lemon / Citrus -> Run Ripeness & Quality Pipeline
             x1, y1, x2, y2 = [int(c) for c in bbox]
-            
-            # Crop detected lemon with padding
             pad = 5
             h, w = img.shape[:2]
             x1_pad = max(0, x1 - pad)
@@ -120,49 +157,72 @@ class LemonHarvestPipeline:
             x2_pad = min(w, x2 + pad)
             y2_pad = min(h, y2 + pad)
             crop = img[y1_pad:y2_pad, x1_pad:x2_pad]
-            
+
             if crop.size == 0:
                 continue
-            
-            # Classify
+
+            # Classify ripeness and quality
             classification = self.classifier.predict(crop)
-            
-            # Estimate size
             size = self.classifier.estimate_size(bbox)
-            
-            # Make harvest decision
             should_harvest = self._should_harvest(
                 classification["ripeness"],
                 classification["quality"],
                 size,
             )
-            
+
             result = {
                 "bbox": bbox,
-                "detection_confidence": det["confidence"],
+                "target_type": "lemon",
+                "class_name": "lemon",
+                "detection_confidence": conf,
                 "ripeness": classification["ripeness"],
                 "ripeness_confidence": classification["ripeness_confidence"],
                 "quality": classification["quality"],
                 "quality_confidence": classification["quality_confidence"],
                 "size": size,
                 "harvest": should_harvest,
+                "status_note": "Lemon Target Verified",
             }
             results.append(result)
-        
-        # Summary
-        total = len(results)
-        harvestable = sum(1 for r in results if r["harvest"])
-        
+
+        # Summary Metrics
+        lemon_results = [r for r in results if r["target_type"] == "lemon"]
+        human_results = [r for r in results if r["target_type"] == "human"]
+        object_results = [r for r in results if r["target_type"] == "object"]
+
+        total_lemons = len(lemon_results)
+        harvestable = sum(1 for r in lemon_results if r["harvest"])
+        not_ready = total_lemons - harvestable
+
+        # Scene status determination
+        if len(human_results) > 0:
+            scene_status = "HUMAN_ALERT"
+            safety_interlock = "ENGAGED (OPERATOR IN VIEW)"
+        elif total_lemons > 0:
+            scene_status = "LEMON_TARGET"
+            safety_interlock = "DISENGAGED (SAFE)"
+        elif len(object_results) > 0:
+            scene_status = "OBJECT_DETECTED"
+            safety_interlock = "DISENGAGED (SAFE)"
+        else:
+            scene_status = "SCANNING"
+            safety_interlock = "DISENGAGED (SAFE)"
+
         return {
             "image": img,
             "detections": results,
             "summary": {
-                "total_lemons": total,
+                "total_items": len(results),
+                "total_lemons": total_lemons,
+                "humans_count": len(human_results),
+                "objects_count": len(object_results),
                 "harvestable": harvestable,
-                "not_ready": total - harvestable,
-                "ripeness_distribution": self._count_distribution(results, "ripeness"),
-                "quality_distribution": self._count_distribution(results, "quality"),
-                "size_distribution": self._count_distribution(results, "size"),
+                "not_ready": not_ready,
+                "scene_status": scene_status,
+                "safety_interlock": safety_interlock,
+                "ripeness_distribution": self._count_distribution(lemon_results, "ripeness"),
+                "quality_distribution": self._count_distribution(lemon_results, "quality"),
+                "size_distribution": self._count_distribution(lemon_results, "size"),
             },
         }
 
