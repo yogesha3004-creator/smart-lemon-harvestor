@@ -1,0 +1,32 @@
+detector:
+  weights: weights/detection/best.pt
+  confidence_threshold: 0.5
+  iou_threshold: 0.45
+  input_size: 640
+
+classifier:
+  weights: weights/classifier/best.pth
+  input_size: 224
+  ripeness_classes: [raw, semi_ripe, ripe]
+  quality_classes: [grade_a, grade_b, grade_c]
+
+size_estimation:
+  method: bbox_area  # bbox_area or reference_scale
+  thresholds:
+    small: 2000    # pixels^2
+    medium: 5000
+    large: 10000
+
+harvest_decision:
+  harvest_ripeness: [ripe]
+  min_quality: grade_b
+  min_size: medium
+
+visualization:
+  show_boxes: true
+  show_labels: true
+  show_confidence: true
+  ripeness_colors:
+    raw: [0, 0, 255]       # Red
+    semi_ripe: [0, 255, 255] # Yellow
+    ripe: [0, 255, 0]       # Green

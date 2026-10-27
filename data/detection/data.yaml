@@ -1,0 +1,11 @@
+# Ultralytics YOLOv8 Dataset Configuration
+# Smart Lemon Harvester Vision Pipeline
+
+path: C:/Users/YOGESH/.gemini/antigravity/scratch/smart-lemon-harvester/data/detection  # dataset root directory
+train: images/train   # train images (relative to 'path')
+val: images/val       # val images (relative to 'path')
+test: images/test     # test images (relative to 'path')
+
+# Classes
+nc: 1
+names: ['lemon']

@@ -1,0 +1,34 @@
+model:
+  architecture: yolov8n
+  pretrained: true
+  num_classes: 1  # lemon
+  input_size: 640
+
+training:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 0.01
+  optimizer: auto
+  patience: 20
+  save_period: 10
+
+augmentation:
+  hsv_h: 0.015
+  hsv_s: 0.7
+  hsv_v: 0.4
+  degrees: 10.0
+  translate: 0.1
+  scale: 0.5
+  fliplr: 0.5
+  mosaic: 1.0
+  mixup: 0.1
+
+data:
+  dataset_path: data/detection
+  train: images/train
+  val: images/val
+  test: images/test
+
+paths:
+  weights_dir: weights/detection
+  results_dir: runs/detection
