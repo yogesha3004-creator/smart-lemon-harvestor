@@ -42,11 +42,38 @@ def _get_scale_factors(image: np.ndarray) -> Tuple[float, int, int]:
     """
     h, w = image.shape[:2]
     diagonal = math.hypot(h, w)
-    # Calibrated against a standard 1280x720 frame (diagonal ~ 1468)
-    scale = max(0.40, min(1.3, (diagonal / 1468.0) * 0.65))
-    text_thickness = max(1, int(round(scale * 1.8)))
-    box_thickness = max(1, int(round(scale * 2.5)))
+    # Calibrated against a standard 1280x720 frame
+    scale = max(0.45, min(1.3, (diagonal / 1468.0) * 0.72))
+    text_thickness = max(1, int(round(scale * 2.0)))
+    box_thickness = max(2, int(round(scale * 3.2)))
     return scale, text_thickness, box_thickness
+
+
+def _draw_corner_brackets(
+    image: np.ndarray,
+    x1: int,
+    y1: int,
+    x2: int,
+    y2: int,
+    color: Tuple[int, int, int],
+    thickness: int,
+    length: int = 18,
+) -> None:
+    """Draw high-tech corner brackets around an object bounding box."""
+    bracket_len = min(length, max(8, int((x2 - x1) * 0.25)))
+    thick = max(2, thickness + 1)
+    # Top-Left
+    cv2.line(image, (x1, y1), (x1 + bracket_len, y1), color, thick, cv2.LINE_AA)
+    cv2.line(image, (x1, y1), (x1, y1 + bracket_len), color, thick, cv2.LINE_AA)
+    # Top-Right
+    cv2.line(image, (x2, y1), (x2 - bracket_len, y1), color, thick, cv2.LINE_AA)
+    cv2.line(image, (x2, y1), (x2, y1 + bracket_len), color, thick, cv2.LINE_AA)
+    # Bottom-Left
+    cv2.line(image, (x1, y2), (x1 + bracket_len, y2), color, thick, cv2.LINE_AA)
+    cv2.line(image, (x1, y2), (x1, y2 - bracket_len), color, thick, cv2.LINE_AA)
+    # Bottom-Right
+    cv2.line(image, (x2, y2), (x2 - bracket_len, y2), color, thick, cv2.LINE_AA)
+    cv2.line(image, (x2, y2), (x2, y2 - bracket_len), color, thick, cv2.LINE_AA)
 
 
 def _draw_harvest_icon(
@@ -234,6 +261,7 @@ def draw_pipeline_results(
         if target_type == "human":
             color = (255, 200, 0)  # Neon Cyan / Sky Blue
             cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness=box_thick, lineType=cv2.LINE_AA)
+            _draw_corner_brackets(annotated, x1, y1, x2, y2, color, box_thick)
             line1 = f"HUMAN / OPERATOR ({conf*100:.0f}%)"
             line2 = "SAFETY INTERLOCK: HOLD"
             font = cv2.FONT_HERSHEY_SIMPLEX
@@ -257,6 +285,7 @@ def draw_pipeline_results(
         if target_type == "object":
             color = (180, 140, 140)  # Slate / Muted Lavender
             cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness=box_thick, lineType=cv2.LINE_AA)
+            _draw_corner_brackets(annotated, x1, y1, x2, y2, color, box_thick)
             line1 = f"OBJECT: {class_name.upper()}"
             line2 = "NON-HARVEST TARGET (IGNORED)"
             font = cv2.FONT_HERSHEY_SIMPLEX
@@ -286,8 +315,9 @@ def draw_pipeline_results(
         # Color based on ripeness
         color = RIPENESS_COLOR_MAP.get(ripeness, COLOR_DEFAULT)
 
-        # 1. Draw bounding box
+        # 1. Draw bounding box and high-tech targeting brackets
         cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness=box_thick, lineType=cv2.LINE_AA)
+        _draw_corner_brackets(annotated, x1, y1, x2, y2, color, box_thick)
 
         # 2. Draw Harvest Icon badge on top-right of bounding box
         badge_radius = max(10, min(24, int(round((x2 - x1) * 0.12))))

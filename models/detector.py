@@ -17,7 +17,7 @@ class LemonDetector:
     Supports training, inference, evaluation, and model export.
     """
 
-    DEFAULT_CONFIDENCE = 0.5
+    DEFAULT_CONFIDENCE = 0.25
     DEFAULT_IOU = 0.45
     CLASS_NAMES = ["lemon"]
 
@@ -125,8 +125,8 @@ class LemonDetector:
                     if raw_name in ["person", "human"]:
                         target_type = "human"
                         display_name = "Human / Operator"
-                    # 2. Lemon / Citrus / Fruit Detection
-                    elif raw_name in ["lemon", "orange", "apple", "banana"]:
+                    # 2. Lemon / Citrus / Fruit Detection (including round fruits & yellow items)
+                    elif raw_name in ["lemon", "orange", "apple", "banana", "sports ball"]:
                         target_type = "lemon"
                         display_name = "lemon"
                     # 3. Other Non-Harvest Object Detection

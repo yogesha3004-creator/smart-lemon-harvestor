@@ -52,7 +52,7 @@ def get_pipeline() -> LemonHarvestPipeline:
         pipeline = LemonHarvestPipeline(
             config_path=str(config_path) if config_path.exists() else None,
             detector_weights="yolov8n.pt",
-            confidence=0.35,  # Slightly lower confidence for mobile sensors
+            confidence=0.25,  # Optimized sensitivity for indoor & mobile lighting
         )
         logger.info("Pipeline ready for inference.")
     return pipeline
@@ -185,14 +185,14 @@ def video_feed():
                     break
 
                 frame_count += 1
-                # Run AI pipeline every 3rd frame to optimize latency
-                if frame_count % 3 == 0 or last_results is None:
+                # Run AI pipeline every 2nd frame for fluid real-time tracking
+                if frame_count % 2 == 0 or last_results is None:
                     last_results = pipe.process_image(frame)
                     latest_stream_stats["summary"] = last_results["summary"]
                     latest_stream_stats["detections"] = last_results["detections"]
 
                 annotated = draw_pipeline_results(frame, last_results)
-                ret, buffer = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+                ret, buffer = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
                 if not ret:
                     continue
 

@@ -1,6 +1,6 @@
 detector:
   weights: weights/detection/best.pt
-  confidence_threshold: 0.5
+  confidence_threshold: 0.25
   iou_threshold: 0.45
   input_size: 640
 
