@@ -3,17 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🍋 Smart Lemon Harvester AI — CyberAgri Vision</title>
+  <title>🍋 CYBERAGRI AERO-OS — Autonomous Lemon Harvester</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+    :root {
+      --neon-lime: #10b981;
+      --neon-gold: #facc15;
+      --neon-cyan: #06b6d4;
+      --neon-crimson: #f43f5e;
+      --cyber-obsidian: #030712;
+      --hud-panel: rgba(10, 17, 34, 0.78);
+    }
 
     body {
-      background: radial-gradient(circle at top right, #092015 0%, #070d19 40%, #020617 100%);
-      color: #f1f5f9;
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: radial-gradient(circle at 10% 0%, #064e3b22 0%, transparent 40%),
+                  radial-gradient(circle at 90% 20%, #713f1222 0%, transparent 40%),
+                  radial-gradient(circle at 50% 100%, #082f4933 0%, transparent 60%),
+                  #030712;
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
       min-height: 100vh;
+      overflow-x: hidden;
       touch-action: manipulation;
     }
 
@@ -21,190 +34,313 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    .glass {
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    /* Glassmorphism Ultra */
+    .hud-glass {
+      background: var(--hud-panel);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
 
-    .glass-glow-green {
-      border: 1px solid rgba(16, 185, 129, 0.6);
-      box-shadow: 0 0 30px rgba(16, 185, 129, 0.25);
+    .hud-glass-interactive:hover {
+      border-color: rgba(250, 204, 21, 0.35);
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.12);
     }
 
-    .glass-glow-gold {
-      border: 1px solid rgba(250, 204, 21, 0.6);
-      box-shadow: 0 0 30px rgba(250, 204, 21, 0.25);
+    /* Shimmer Button Effect */
+    .btn-shimmer {
+      position: relative;
+      overflow: hidden;
     }
-
-    .glass-glow-blue {
-      border: 1px solid rgba(6, 182, 212, 0.6);
-      box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
-    }
-
-    /* Cyber Viewfinder Reticle Brackets */
-    .reticle-corner {
+    .btn-shimmer::after {
+      content: '';
       position: absolute;
-      width: 22px;
-      height: 22px;
-      border-color: rgba(250, 204, 21, 0.9);
-      pointer-events: none;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(60deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: rotate(30deg);
+      animation: shimmer 4s infinite;
     }
-    .reticle-tl { top: 12px; left: 12px; border-top: 2.5px solid; border-left: 2.5px solid; }
-    .reticle-tr { top: 12px; right: 12px; border-top: 2.5px solid; border-right: 2.5px solid; }
-    .reticle-bl { bottom: 12px; left: 12px; border-bottom: 2.5px solid; border-left: 2.5px solid; }
-    .reticle-br { bottom: 12px; right: 12px; border-bottom: 2.5px solid; border-right: 2.5px solid; }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
 
-    /* Animated Laser Scanner Sweep */
-    .scan-laser {
+    /* Sci-Fi Viewfinder Cockpit Reticles */
+    .viewfinder-frame {
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(16, 185, 129, 0.15);
+    }
+
+    .hud-bracket {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    .hud-tl { top: 14px; left: 14px; border-top: 2.5px solid #facc15; border-left: 2.5px solid #facc15; }
+    .hud-tr { top: 14px; right: 14px; border-top: 2.5px solid #facc15; border-right: 2.5px solid #facc15; }
+    .hud-bl { bottom: 14px; left: 14px; border-bottom: 2.5px solid #facc15; border-left: 2.5px solid #facc15; }
+    .hud-br { bottom: 14px; right: 14px; border-bottom: 2.5px solid #facc15; border-right: 2.5px solid #facc15; }
+
+    /* Animated Crosshair Center */
+    .center-crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px; height: 48px;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .center-crosshair::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1px;
+      background: #facc15;
+    }
+    .center-crosshair::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 1px;
+      background: #facc15;
+    }
+
+    /* Radar Scanning Sweep */
+    .radar-sweep {
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent, #10b981, #facc15, #06b6d4, transparent);
-      box-shadow: 0 0 16px #10b981;
-      animation: scan 2.5s ease-in-out infinite alternate;
+      background: linear-gradient(90deg, transparent, #10b981 30%, #facc15 70%, transparent);
+      box-shadow: 0 0 20px #10b981;
+      animation: radar 2.8s ease-in-out infinite alternate;
       pointer-events: none;
     }
-
-    @keyframes scan {
-      0% { transform: translateY(0); opacity: 0.2; }
-      50% { opacity: 0.9; }
-      100% { transform: translateY(280px); opacity: 0.2; }
+    @keyframes radar {
+      0% { transform: translateY(0); opacity: 0.15; }
+      50% { opacity: 0.95; }
+      100% { transform: translateY(320px); opacity: 0.15; }
     }
 
-    .pulse-glow {
-      animation: pulse 1.8s infinite;
+    /* Circular SVG Gauge Transition */
+    .gauge-circle {
+      transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.2); }
+    .glow-pill-green {
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+      border-color: rgba(16, 185, 129, 0.6);
+    }
+    .glow-pill-cyan {
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.35);
+      border-color: rgba(6, 182, 212, 0.6);
+    }
+    .glow-pill-gold {
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.35);
+      border-color: rgba(250, 204, 21, 0.6);
+    }
+
+    /* Live Telemetry Blink */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .live-dot {
+      animation: blink 1.6s infinite ease-in-out;
     }
   </style>
 </head>
-<body class="flex flex-col pb-8">
+<body class="flex flex-col pb-10">
 
-  <!-- Top App Navigation -->
-  <header class="glass sticky top-0 z-40 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-xl shadow-lg shadow-yellow-500/25">
-        🍋
-      </div>
-      <div>
-        <div class="flex items-center gap-1.5">
-          <h1 class="text-sm font-bold tracking-tight text-white uppercase">Lemon Harvester AI</h1>
-          <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AI PRO</span>
+  <!-- Top Aerospace Cockpit Header -->
+  <header class="hud-glass sticky top-0 z-50 px-4 py-2.5 border-b border-slate-800/80">
+    <div class="max-w-xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo & System Badge -->
+      <div class="flex items-center gap-3">
+        <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-yellow-400 via-amber-500 to-emerald-600 p-[1.5px] shadow-lg shadow-yellow-500/20">
+          <div class="w-full h-full rounded-[14px] bg-slate-950 flex items-center justify-center text-xl">
+            🍋
+          </div>
+          <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-950 live-dot"></span>
         </div>
-        <p class="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block pulse-glow"></span>
-          Target Verification & Safety System
-        </p>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm font-extrabold tracking-wider text-white uppercase font-mono">AERO·HARVEST</h1>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-yellow-400/10 text-yellow-300 border border-yellow-400/30">MK-IV</span>
+          </div>
+          <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+            <span class="text-emerald-400 flex items-center gap-1">
+              <i class="fa-solid fa-satellite-dish text-[9px]"></i> ONLINE
+            </span>
+            <span>·</span>
+            <span id="telemetryClock">--:--:--</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Quick Audio & Cam Switcher -->
-    <div class="flex items-center gap-1.5">
-      <button id="sfxToggleBtn" title="Toggle Audio Chimes" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-yellow-400 hover:text-yellow-300 text-xs active:scale-95 transition">
-        <i class="fa-solid fa-volume-high" id="sfxIcon"></i>
-      </button>
-      <select id="cameraSourceSelect" class="bg-slate-900 border border-slate-700 text-xs font-semibold rounded-xl px-2 py-1.5 text-yellow-300 focus:outline-none focus:border-yellow-400">
-        <option value="2" selected>📱 Phone (Iriun)</option>
-        <option value="0">💻 Laptop Cam</option>
-      </select>
+      <!-- Quick Control Station (Audio, Settings, Camera Select) -->
+      <div class="flex items-center gap-2">
+        <button id="sfxToggleBtn" title="Toggle Sound FX" class="w-8 h-8 rounded-xl bg-slate-900/90 border border-slate-700/80 text-yellow-400 flex items-center justify-center text-xs active:scale-95 transition hover:border-yellow-400/50">
+          <i class="fa-solid fa-volume-high" id="sfxIcon"></i>
+        </button>
+
+        <!-- Camera Switcher Pill -->
+        <div class="relative">
+          <select id="cameraSourceSelect" class="appearance-none bg-slate-900/95 border border-slate-700 text-xs font-mono font-semibold text-yellow-300 rounded-xl pl-3 pr-7 py-1.5 focus:outline-none focus:border-yellow-400 cursor-pointer shadow-inner">
+            <option value="2" selected>📱 Phone (Iriun Cam 2)</option>
+            <option value="0">💻 Laptop Front Cam</option>
+          </select>
+          <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 pointer-events-none"></i>
+        </div>
+      </div>
+
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="flex-1 flex flex-col px-4 pt-3 max-w-md mx-auto w-full gap-3">
+  <!-- Main Cockpit Layout -->
+  <main class="flex-1 flex flex-col px-4 pt-3 max-w-xl mx-auto w-full gap-3.5">
 
-    <!-- Target Verification Status Pill -->
-    <div id="targetVerificationPill" class="glass px-3.5 py-2.5 rounded-2xl flex items-center justify-between border-slate-700 transition-all duration-300">
-      <div class="flex items-center gap-2">
-        <span id="targetStatusDot" class="w-3 h-3 rounded-full bg-yellow-400 pulse-glow inline-block"></span>
-        <div class="flex flex-col">
-          <span class="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-semibold">Scene Recognition</span>
-          <span id="targetStatusText" class="text-xs font-bold text-yellow-400 tracking-wide uppercase">Searching Target...</span>
-        </div>
+    <!-- 1. Real-Time Telemetry Bar (GPS, Temperature, Battery, Safety) -->
+    <div class="grid grid-cols-4 gap-1.5 text-[10px] font-mono">
+      <div class="hud-glass px-2.5 py-1.5 rounded-xl border-slate-800 flex items-center justify-between">
+        <span class="text-slate-400"><i class="fa-solid fa-wifi text-emerald-400 mr-1"></i>SIG</span>
+        <span class="text-emerald-300 font-bold">98%</span>
       </div>
-      <div id="safetyBadge" class="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-400 font-bold">
-        ARM: SAFE
+      <div class="hud-glass px-2.5 py-1.5 rounded-xl border-slate-800 flex items-center justify-between">
+        <span class="text-slate-400"><i class="fa-solid fa-temperature-half text-amber-400 mr-1"></i>TEMP</span>
+        <span class="text-slate-200 font-bold">28°C</span>
+      </div>
+      <div class="hud-glass px-2.5 py-1.5 rounded-xl border-slate-800 flex items-center justify-between">
+        <span class="text-slate-400"><i class="fa-solid fa-battery-three-quarters text-emerald-400 mr-1"></i>BAT</span>
+        <span class="text-slate-200 font-bold">87%</span>
+      </div>
+      <div class="hud-glass px-2.5 py-1.5 rounded-xl border-slate-800 flex items-center justify-between">
+        <span class="text-slate-400"><i class="fa-solid fa-compass text-cyan-400 mr-1"></i>FOV</span>
+        <span class="text-cyan-300 font-bold">78°</span>
       </div>
     </div>
 
-    <!-- Viewfinder Viewport -->
-    <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden glass border border-slate-800 shadow-2xl flex items-center justify-center bg-black/90">
+    <!-- 2. Target Identification & Safety Interlock Banner -->
+    <div id="targetStatusCard" class="hud-glass px-4 py-3 rounded-2xl flex items-center justify-between border-slate-800 transition-all duration-300">
+      <div class="flex items-center gap-3">
+        <div id="statusIconBox" class="w-10 h-10 rounded-xl bg-yellow-400/10 border border-yellow-400/30 flex items-center justify-center text-yellow-400 text-lg">
+          <i class="fa-solid fa-radar" id="statusIcon"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[9px] uppercase tracking-wider font-mono text-slate-400">Target Verification Engine</span>
+          <span id="targetStatusHeading" class="text-xs font-bold text-yellow-300 tracking-wide uppercase font-mono">SCANNING FIELD OF VIEW...</span>
+        </div>
+      </div>
+      <!-- Robotic Arm Interlock Pill -->
+      <div id="interlockBadge" class="px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700 text-[10px] font-mono font-bold text-slate-300 flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+        <span id="interlockText">ARM: SAFE</span>
+      </div>
+    </div>
+
+    <!-- 3. Futuristic Camera Viewfinder -->
+    <div class="relative w-full aspect-[4/3] rounded-3xl overflow-hidden hud-glass border border-slate-800 shadow-2xl flex items-center justify-center bg-black/95 viewfinder-frame">
       
-      <!-- Video Stream Image from Python backend -->
-      <img id="liveStreamFeed" src="/api/video_feed?source=2" class="w-full h-full object-cover" alt="Live AI Stream">
+      <!-- Video Feed Image -->
+      <img id="liveStreamFeed" src="/api/video_feed?source=2" class="w-full h-full object-cover" alt="Live Camera AI Feed">
 
-      <!-- Laser Scanner Line -->
-      <div class="scan-laser"></div>
+      <!-- Sci-Fi Cockpit Elements -->
+      <div class="radar-sweep"></div>
+      <div class="center-crosshair"></div>
+      <div class="hud-bracket hud-tl"></div>
+      <div class="hud-bracket hud-tr"></div>
+      <div class="hud-bracket hud-bl"></div>
+      <div class="hud-bracket hud-br"></div>
 
-      <!-- Sci-Fi Reticle Brackets -->
-      <div class="reticle-corner reticle-tl"></div>
-      <div class="reticle-corner reticle-tr"></div>
-      <div class="reticle-corner reticle-bl"></div>
-      <div class="reticle-corner reticle-br"></div>
-
-      <!-- Live Stream HUD Badge -->
-      <div class="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-glow"></span>
-        <span id="viewfinderCounter">0 Targets Identified</span>
+      <!-- Top HUD Horizon Compass -->
+      <div class="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[9px] font-mono text-slate-400 flex items-center gap-2 pointer-events-none">
+        <span>W</span><span>·</span><span class="text-yellow-400 font-bold">N 342°</span><span>·</span><span>E</span>
       </div>
 
-      <!-- Reload Stream Button -->
-      <div class="absolute bottom-3 right-3 z-20 flex gap-1.5">
-        <button id="refreshStreamBtn" title="Restart Stream" class="w-8 h-8 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-white flex items-center justify-center text-xs active:scale-90 transition hover:bg-black/90">
+      <!-- Bottom HUD Target Counter -->
+      <div class="absolute bottom-3 left-3 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
+        <span id="hudTargetCount">0 OBJECTS ACQUIRED</span>
+      </div>
+
+      <!-- Bottom HUD Latency Badge -->
+      <div class="absolute bottom-3 right-3 flex gap-1.5">
+        <div id="latencyBadge" class="px-2.5 py-1 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-[10px] font-mono text-emerald-400 font-bold">
+          24 FPS · 18ms
+        </div>
+        <button id="streamRefreshBtn" title="Reset Camera" class="w-7 h-7 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-white flex items-center justify-center text-xs active:scale-90 transition hover:bg-black">
           <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
+
     </div>
 
-    <!-- Dynamic Harvest Decision Banner -->
-    <div id="harvestBanner" class="p-3.5 rounded-2xl text-center hidden transition-all duration-300">
-      <!-- Injected via JS -->
+    <!-- 4. Dynamic Harvest Command Banner -->
+    <div id="harvestBanner" class="p-4 rounded-2xl text-center hidden transition-all duration-300">
+      <!-- Injected dynamically -->
     </div>
 
-    <!-- 3-Column Metrics Matrix -->
-    <div class="grid grid-cols-3 gap-2">
-      <!-- Lemons Count -->
-      <div class="glass p-3 rounded-xl text-center border-yellow-500/20 bg-yellow-500/5">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-yellow-400 flex items-center justify-center gap-1">
-          <i class="fa-solid fa-lemon text-xs"></i> Lemons
-        </span>
-        <span id="metricLemons" class="text-xl font-bold font-mono text-white mt-0.5 block">0</span>
+    <!-- 5. Advanced Telemetry Gauges (Donut Radial Meter + Stats) -->
+    <div class="grid grid-cols-3 gap-2.5">
+
+      <!-- Radial Ripeness Gauge Card -->
+      <div class="hud-glass p-3 rounded-2xl flex flex-col items-center justify-center border-slate-800/80">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg class="w-full h-full" viewBox="0 0 36 36">
+            <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path id="gaugeSvgPath" class="text-yellow-400 gauge-circle" stroke-width="3.5" stroke-dasharray="100, 100" stroke-dashoffset="100" stroke-linecap="round" stroke="currentColor" fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span id="gaugePercentage" class="text-xs font-extrabold font-mono text-white">0%</span>
+            <span class="text-[7px] text-slate-400 uppercase font-mono">Ripeness</span>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-slate-300 mt-1 uppercase tracking-wider font-mono">Maturity</span>
       </div>
-      <!-- Harvest Ready -->
-      <div class="glass p-3 rounded-xl text-center border-emerald-500/20 bg-emerald-500/5">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-center gap-1">
-          <i class="fa-solid fa-check-circle text-xs"></i> Ready
+
+      <!-- Harvestable Lemons Metric -->
+      <div class="hud-glass p-3 rounded-2xl flex flex-col items-center justify-center text-center border-emerald-500/20 bg-emerald-500/5">
+        <span class="text-[9px] font-bold uppercase tracking-wider font-mono text-emerald-400 flex items-center gap-1">
+          <i class="fa-solid fa-circle-check"></i> Ready
         </span>
-        <span id="metricPick" class="text-xl font-bold font-mono text-emerald-400 mt-0.5 block">0</span>
+        <span id="metricPickCount" class="text-2xl font-black font-mono text-white mt-1">0</span>
+        <span class="text-[9px] text-emerald-400/80 font-mono mt-0.5">Commercial Grade</span>
       </div>
-      <!-- Humans / Objects -->
-      <div class="glass p-3 rounded-xl text-center border-cyan-500/20 bg-cyan-500/5">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center justify-center gap-1">
-          <i class="fa-solid fa-user-shield text-xs"></i> Safety
+
+      <!-- Ripening / Growing Metric -->
+      <div class="hud-glass p-3 rounded-2xl flex flex-col items-center justify-center text-center border-amber-500/20 bg-amber-500/5">
+        <span class="text-[9px] font-bold uppercase tracking-wider font-mono text-amber-400 flex items-center gap-1">
+          <i class="fa-solid fa-hourglass-half"></i> Ripening
         </span>
-        <span id="metricSafety" class="text-xl font-bold font-mono text-cyan-400 mt-0.5 block">0</span>
+        <span id="metricWaitCount" class="text-2xl font-black font-mono text-white mt-1">0</span>
+        <span class="text-[9px] text-amber-400/80 font-mono mt-0.5">Growing Cycle</span>
       </div>
+
     </div>
 
-    <!-- Detailed Identification Feed Card -->
-    <div class="glass rounded-2xl p-4 flex flex-col gap-2.5">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-        <h2 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-microchip text-yellow-400"></i> Target Verification Feed
-        </h2>
-        <span id="latencyDisplay" class="text-[10px] font-mono text-emerald-400">FEED ACTIVE</span>
+    <!-- 6. Detailed Inspection Feed (Live Verified Targets) -->
+    <div class="hud-glass rounded-2xl p-4 flex flex-col gap-3 border-slate-800/80">
+      <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg bg-yellow-400/10 flex items-center justify-center text-yellow-400 text-xs">
+            <i class="fa-solid fa-microchip"></i>
+          </div>
+          <h2 class="text-xs font-extrabold text-white uppercase tracking-wider font-mono">Live Target Telemetry</h2>
+        </div>
+        <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">YOLOv8-NANO</span>
       </div>
 
-      <div id="detectionDetailsList" class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
-        <div class="text-center py-6 text-xs text-slate-500 flex flex-col items-center gap-1.5">
-          <i class="fa-solid fa-radar text-xl text-slate-600"></i>
-          <span>Scanning camera stream for lemons, operators, or objects...</span>
+      <div id="detectionCardsContainer" class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
+        <div class="text-center py-8 text-xs text-slate-500 flex flex-col items-center gap-2 font-mono">
+          <i class="fa-solid fa-crosshairs text-2xl text-slate-700 animate-spin" style="animation-duration: 8s;"></i>
+          <span>Aim phone camera at citrus trees or fruit to initiate AI telemetry...</span>
         </div>
       </div>
     </div>
@@ -214,28 +350,40 @@
   <script>
     const streamFeed = document.getElementById('liveStreamFeed');
     const cameraSelect = document.getElementById('cameraSourceSelect');
-    const refreshBtn = document.getElementById('refreshStreamBtn');
+    const refreshBtn = document.getElementById('streamRefreshBtn');
     const sfxBtn = document.getElementById('sfxToggleBtn');
     const sfxIcon = document.getElementById('sfxIcon');
 
-    const targetVerificationPill = document.getElementById('targetVerificationPill');
-    const targetStatusDot = document.getElementById('targetStatusDot');
-    const targetStatusText = document.getElementById('targetStatusText');
-    const safetyBadge = document.getElementById('safetyBadge');
+    const targetStatusCard = document.getElementById('targetStatusCard');
+    const statusIconBox = document.getElementById('statusIconBox');
+    const statusIcon = document.getElementById('statusIcon');
+    const targetStatusHeading = document.getElementById('targetStatusHeading');
+    const interlockBadge = document.getElementById('interlockBadge');
+    const interlockText = document.getElementById('interlockText');
 
     const harvestBanner = document.getElementById('harvestBanner');
-    const metricLemons = document.getElementById('metricLemons');
-    const metricPick = document.getElementById('metricPick');
-    const metricSafety = document.getElementById('metricSafety');
-    const detectionDetailsList = document.getElementById('detectionDetailsList');
-    const viewfinderCounter = document.getElementById('viewfinderCounter');
+    const gaugeSvgPath = document.getElementById('gaugeSvgPath');
+    const gaugePercentage = document.getElementById('gaugePercentage');
+    const metricPickCount = document.getElementById('metricPickCount');
+    const metricWaitCount = document.getElementById('metricWaitCount');
+    const hudTargetCount = document.getElementById('hudTargetCount');
+    const detectionCardsContainer = document.getElementById('detectionCardsContainer');
+    const telemetryClock = document.getElementById('telemetryClock');
 
     let sfxEnabled = true;
     let audioCtx = null;
-    let lastSceneStatus = "";
+    let previousSceneStatus = "";
 
-    // Web Audio API Sci-Fi Lock-On Beep
-    function playSciFiChime(type) {
+    // Live Telemetry Clock
+    function updateClock() {
+      const now = new Date();
+      telemetryClock.textContent = now.toTimeString().split(' ')[0];
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // High-tech Audio Chimes (Web Audio API)
+    function playCockpitSound(type) {
       if (!sfxEnabled) return;
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -244,22 +392,24 @@
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
-        if (type === 'lemon') {
+        if (type === 'lock') {
+          // Dual frequency lock-on chime
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-          osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
-          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+          osc.frequency.setValueAtTime(1046.5, audioCtx.currentTime); // C6
+          osc.frequency.exponentialRampToValueAtTime(1318.5, audioCtx.currentTime + 0.15); // E6
+          gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
           osc.start();
-          osc.stop(audioCtx.currentTime + 0.12);
-        } else if (type === 'human') {
+          osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === 'safety') {
+          // Low safety alert tone
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(320, audioCtx.currentTime);
-          osc.frequency.linearRampToValueAtTime(220, audioCtx.currentTime + 0.18);
-          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+          osc.frequency.setValueAtTime(260, audioCtx.currentTime);
+          osc.frequency.linearRampToValueAtTime(180, audioCtx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
           osc.start();
-          osc.stop(audioCtx.currentTime + 0.18);
+          osc.stop(audioCtx.currentTime + 0.2);
         }
       } catch (e) {}
     }
@@ -277,8 +427,8 @@
       streamFeed.src = `/api/video_feed?source=${cameraSelect.value}&t=${Date.now()}`;
     });
 
-    // Poll stats from backend
-    async function pollStats() {
+    // Main Telemetry Polling Loop
+    async function pollTelemetry() {
       try {
         const res = await fetch('/api/stream_stats');
         const data = await res.json();
@@ -287,117 +437,135 @@
 
         const totalLemons = summary.total_lemons || 0;
         const harvestable = summary.harvestable || 0;
+        const notReady = summary.not_ready || 0;
         const humansCount = summary.humans_count || 0;
         const objectsCount = summary.objects_count || 0;
         const sceneStatus = summary.scene_status || "SCANNING";
 
-        // Update Matrix Counters
-        metricLemons.textContent = totalLemons;
-        metricPick.textContent = harvestable;
-        metricSafety.textContent = humansCount > 0 ? `${humansCount} HUMAN` : (objectsCount > 0 ? `${objectsCount} OBJ` : "SAFE");
-        viewfinderCounter.textContent = `${detections.length} Target(s) in frame`;
+        // 1. Update Metrics
+        metricPickCount.textContent = harvestable;
+        metricWaitCount.textContent = notReady;
+        hudTargetCount.textContent = `${detections.length} TARGETS ACQUIRED`;
 
-        // 1. Scene Recognition Pill (Top Bar)
+        // 2. Update Ripeness Radial Donut Gauge
+        let avgRipeness = 0;
+        const lemons = detections.filter(d => d.target_type === 'lemon');
+        if (lemons.length > 0) {
+          const ripeWeights = { 'ripe': 1.0, 'semi_ripe': 0.55, 'raw': 0.2 };
+          const sumWeight = lemons.reduce((acc, l) => acc + (ripeWeights[l.ripeness] || 0.3), 0);
+          avgRipeness = Math.round((sumWeight / lemons.length) * 100);
+        }
+        gaugePercentage.textContent = `${avgRipeness}%`;
+        const offset = 100 - avgRipeness;
+        gaugeSvgPath.style.strokeDashoffset = offset;
+        gaugeSvgPath.className = avgRipeness >= 75 ? "text-emerald-400 gauge-circle" :
+                                 avgRipeness >= 45 ? "text-yellow-400 gauge-circle" : "text-amber-500 gauge-circle";
+
+        // 3. Scene Recognition & Cockpit Safety Interlock
         if (sceneStatus === "HUMAN_ALERT") {
-          targetVerificationPill.className = "glass glass-glow-blue px-3.5 py-2.5 rounded-2xl flex items-center justify-between bg-cyan-950/40 border-cyan-400";
-          targetStatusDot.className = "w-3 h-3 rounded-full bg-cyan-400 pulse-glow inline-block";
-          targetStatusText.className = "text-xs font-bold text-cyan-300 tracking-wide uppercase";
-          targetStatusText.textContent = `👤 Operator in View (${humansCount})`;
-          safetyBadge.className = "px-2 py-1 rounded-lg bg-cyan-500/20 border border-cyan-400 text-[10px] font-mono text-cyan-300 font-bold";
-          safetyBadge.textContent = "ARM: HOLD";
-          if (lastSceneStatus !== "HUMAN_ALERT") playSciFiChime('human');
+          targetStatusCard.className = "hud-glass glow-pill-cyan px-4 py-3 rounded-2xl flex items-center justify-between bg-cyan-950/30 border-cyan-400";
+          statusIconBox.className = "w-10 h-10 rounded-xl bg-cyan-400/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300 text-lg";
+          statusIcon.className = "fa-solid fa-user-shield";
+          targetStatusHeading.className = "text-xs font-bold text-cyan-300 tracking-wide uppercase font-mono";
+          targetStatusHeading.textContent = `HUMAN OPERATOR DETECTED (${humansCount})`;
+          interlockBadge.className = "px-2.5 py-1 rounded-xl bg-cyan-500/20 border border-cyan-400 text-[10px] font-mono font-bold text-cyan-300 flex items-center gap-1.5";
+          interlockText.textContent = "ARM: HOLD";
+          if (previousSceneStatus !== "HUMAN_ALERT") playCockpitSound('safety');
         } else if (sceneStatus === "LEMON_TARGET") {
-          targetVerificationPill.className = "glass glass-glow-green px-3.5 py-2.5 rounded-2xl flex items-center justify-between bg-emerald-950/40 border-emerald-400";
-          targetStatusDot.className = "w-3 h-3 rounded-full bg-emerald-400 pulse-glow inline-block";
-          targetStatusText.className = "text-xs font-bold text-emerald-300 tracking-wide uppercase";
-          targetStatusText.textContent = `🍋 Target Verified: ${totalLemons} Lemon(s)`;
-          safetyBadge.className = "px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400 text-[10px] font-mono text-emerald-300 font-bold";
-          safetyBadge.textContent = "ARM: READY";
-          if (lastSceneStatus !== "LEMON_TARGET") playSciFiChime('lemon');
+          targetStatusCard.className = "hud-glass glow-pill-green px-4 py-3 rounded-2xl flex items-center justify-between bg-emerald-950/30 border-emerald-400";
+          statusIconBox.className = "w-10 h-10 rounded-xl bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 text-lg";
+          statusIcon.className = "fa-solid fa-lemon";
+          targetStatusHeading.className = "text-xs font-bold text-emerald-300 tracking-wide uppercase font-mono";
+          targetStatusHeading.textContent = `TARGET VERIFIED: ${totalLemons} LEMON(S) ACQUIRED`;
+          interlockBadge.className = "px-2.5 py-1 rounded-xl bg-emerald-500/20 border border-emerald-400 text-[10px] font-mono font-bold text-emerald-300 flex items-center gap-1.5";
+          interlockText.textContent = "ARM: READY";
+          if (previousSceneStatus !== "LEMON_TARGET") playCockpitSound('lock');
         } else if (sceneStatus === "OBJECT_DETECTED") {
-          targetVerificationPill.className = "glass px-3.5 py-2.5 rounded-2xl flex items-center justify-between bg-slate-900/60 border-slate-700";
-          targetStatusDot.className = "w-3 h-3 rounded-full bg-slate-400 inline-block";
-          targetStatusText.className = "text-xs font-bold text-slate-300 tracking-wide uppercase";
-          targetStatusText.textContent = `📦 Non-Harvest Object (${objectsCount})`;
-          safetyBadge.className = "px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 font-bold";
-          safetyBadge.textContent = "ARM: STANDBY";
+          targetStatusCard.className = "hud-glass px-4 py-3 rounded-2xl flex items-center justify-between border-slate-700";
+          statusIconBox.className = "w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-lg";
+          statusIcon.className = "fa-solid fa-box-open";
+          targetStatusHeading.className = "text-xs font-bold text-slate-300 tracking-wide uppercase font-mono";
+          targetStatusHeading.textContent = `NON-HARVEST OBJECT DETECTED (${objectsCount})`;
+          interlockBadge.className = "px-2.5 py-1 rounded-xl bg-slate-800 border border-slate-700 text-[10px] font-mono font-bold text-slate-400 flex items-center gap-1.5";
+          interlockText.textContent = "ARM: STANDBY";
         } else {
-          targetVerificationPill.className = "glass px-3.5 py-2.5 rounded-2xl flex items-center justify-between border-slate-800";
-          targetStatusDot.className = "w-3 h-3 rounded-full bg-yellow-400 pulse-glow inline-block";
-          targetStatusText.className = "text-xs font-bold text-yellow-400 tracking-wide uppercase";
-          targetStatusText.textContent = "Scanning Harvest Zone...";
-          safetyBadge.className = "px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 font-bold";
-          safetyBadge.textContent = "ARM: SAFE";
+          targetStatusCard.className = "hud-glass px-4 py-3 rounded-2xl flex items-center justify-between border-slate-800";
+          statusIconBox.className = "w-10 h-10 rounded-xl bg-yellow-400/10 border border-yellow-400/30 flex items-center justify-center text-yellow-400 text-lg";
+          statusIcon.className = "fa-solid fa-radar";
+          targetStatusHeading.className = "text-xs font-bold text-yellow-400 tracking-wide uppercase font-mono";
+          targetStatusHeading.textContent = "SCANNING HARVEST ZONE...";
+          interlockBadge.className = "px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 text-[10px] font-mono font-bold text-slate-400 flex items-center gap-1.5";
+          interlockText.textContent = "ARM: SAFE";
         }
 
-        lastSceneStatus = sceneStatus;
+        previousSceneStatus = sceneStatus;
 
-        // 2. Harvest Decision Banner
+        // 4. Harvest Decision Banner (Aero Command)
         if (totalLemons > 0) {
           harvestBanner.classList.remove('hidden');
           if (harvestable > 0) {
-            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-green bg-emerald-950/50 border border-emerald-500/40';
+            harvestBanner.className = 'p-4 rounded-3xl text-center glow-pill-green bg-gradient-to-r from-emerald-950/80 via-emerald-900/60 to-emerald-950/80 border border-emerald-400 shadow-2xl';
             harvestBanner.innerHTML = `
-              <div class="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm tracking-wide uppercase">
-                <i class="fa-solid fa-circle-check text-base"></i> Harvest Command: PICK
+              <div class="flex items-center justify-center gap-2 text-emerald-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> AUTONOMOUS HARVEST COMMAND: EXECUTE PICK
               </div>
-              <p class="text-xs text-emerald-200/80 mt-1">${harvestable} Lemon(s) ready for commercial harvesting!</p>
+              <p class="text-xs text-emerald-200/90 mt-1 font-mono">${harvestable} Lemon(s) meet Grade-A export size & ripeness standards</p>
             `;
           } else {
-            harvestBanner.className = 'p-3.5 rounded-2xl text-center glass-glow-gold bg-amber-950/50 border border-amber-500/40';
+            harvestBanner.className = 'p-4 rounded-3xl text-center glow-pill-gold bg-gradient-to-r from-amber-950/80 via-amber-900/60 to-amber-950/80 border border-yellow-400 shadow-2xl';
             harvestBanner.innerHTML = `
-              <div class="flex items-center justify-center gap-2 text-amber-400 font-bold text-sm tracking-wide uppercase">
-                <i class="fa-solid fa-hourglass-half text-base"></i> Harvest Command: WAIT
+              <div class="flex items-center justify-center gap-2 text-yellow-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+                <i class="fa-solid fa-hourglass-half text-yellow-400 text-base"></i> AUTONOMOUS HARVEST COMMAND: STANDBY
               </div>
-              <p class="text-xs text-amber-200/80 mt-1">Lemons are still raw or semi-ripe.</p>
+              <p class="text-xs text-yellow-200/90 mt-1 font-mono">Lemons are still raw/ripening. Target not ready for mechanical harvest.</p>
             `;
           }
         } else {
           harvestBanner.classList.add('hidden');
         }
 
-        // 3. Detailed Target Verification Breakdown
+        // 5. Individual Target Cards
         if (detections.length === 0) {
-          detectionDetailsList.innerHTML = `
-            <div class="text-center py-6 text-xs text-slate-500 flex flex-col items-center gap-1.5">
-              <i class="fa-solid fa-radar text-xl text-slate-600"></i>
-              <span>Scanning camera stream for lemons, operators, or objects...</span>
+          detectionCardsContainer.innerHTML = `
+            <div class="text-center py-8 text-xs text-slate-500 flex flex-col items-center gap-2 font-mono">
+              <i class="fa-solid fa-crosshairs text-2xl text-slate-700 animate-spin" style="animation-duration: 8s;"></i>
+              <span>Aim phone camera at citrus trees or fruit to initiate AI telemetry...</span>
             </div>
           `;
         } else {
-          detectionDetailsList.innerHTML = detections.map((d, i) => {
+          detectionCardsContainer.innerHTML = detections.map((d, i) => {
             const type = d.target_type || "lemon";
 
             if (type === "human") {
               return `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-xs">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-md bg-cyan-500/20 text-cyan-400 font-mono font-bold flex items-center justify-center text-xs">
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-cyan-950/25 border border-cyan-500/30 text-xs">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-xl bg-cyan-500/20 text-cyan-300 font-mono font-bold flex items-center justify-center text-xs shadow-inner">
                       <i class="fa-solid fa-user"></i>
                     </span>
                     <div class="flex flex-col">
-                      <span class="font-bold text-cyan-300">Human / Operator</span>
-                      <span class="text-[10px] text-cyan-400/80">Safety Interlock: Robot Arm Inactive</span>
+                      <span class="font-bold text-cyan-200 font-mono">HUMAN / OPERATOR</span>
+                      <span class="text-[10px] text-cyan-400/80 font-mono">Safety Interlock: Gripper Paused</span>
                     </div>
                   </div>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">OPERATOR</span>
+                  <span class="px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/50">PROTECTED</span>
                 </div>
               `;
             }
 
             if (type === "object") {
               return `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-400 font-mono font-bold flex items-center justify-center text-xs">
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-900/60 border border-slate-800 text-xs">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-xl bg-slate-800 text-slate-400 font-mono font-bold flex items-center justify-center text-xs">
                       <i class="fa-solid fa-box"></i>
                     </span>
                     <div class="flex flex-col">
-                      <span class="font-bold text-slate-300 capitalize">${d.class_name}</span>
-                      <span class="text-[10px] text-slate-500">Non-Harvest Target (Ignored)</span>
+                      <span class="font-bold text-slate-200 font-mono uppercase">${d.class_name}</span>
+                      <span class="text-[10px] text-slate-500 font-mono">Non-Harvest Target (Ignored)</span>
                     </div>
                   </div>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">OBJECT</span>
+                  <span class="px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold bg-slate-800 text-slate-400 border border-slate-700">IGNORED</span>
                 </div>
               `;
             }
@@ -405,36 +573,40 @@
             // Lemon Target
             const isRipe = d.ripeness === 'ripe';
             const isSemi = d.ripeness === 'semi_ripe';
-            const badgeClass = isRipe ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' :
-                               isSemi ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' :
-                               'bg-red-500/20 text-red-400 border-red-500/40';
+            const badgeBorder = isRipe ? 'border-emerald-500/50 text-emerald-300 bg-emerald-500/15' :
+                                isSemi ? 'border-yellow-500/50 text-yellow-300 bg-yellow-500/15' :
+                                'border-red-500/50 text-red-300 bg-red-500/15';
 
-            const harvestAction = d.harvest
-              ? `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 shadow-md">PICK ✓</span>`
-              : `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">SKIP ✗</span>`;
+            const harvestBadge = d.harvest
+              ? `<span class="px-3 py-1 rounded-xl text-xs font-black font-mono bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/30">PICK ✓</span>`
+              : `<span class="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-slate-800 text-slate-400 border border-slate-700">SKIP ✗</span>`;
 
             return `
-              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs hover:border-slate-700 transition">
-                <div class="flex items-center gap-2">
-                  <span class="w-6 h-6 rounded-md bg-yellow-500/20 text-yellow-400 font-mono font-bold flex items-center justify-center text-[10px]">#${i + 1}</span>
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs hover:border-slate-700 transition">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-7 h-7 rounded-xl bg-yellow-400/15 text-yellow-300 font-mono font-bold flex items-center justify-center text-[11px] border border-yellow-400/20">
+                    #${i + 1}
+                  </span>
                   <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                      <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] border ${badgeClass}">🍋 ${d.ripeness}</span>
-                      <span class="text-slate-400 text-[10px] uppercase font-mono">${d.size} · ${d.quality}</span>
+                      <span class="px-2 py-0.5 rounded-lg font-extrabold uppercase font-mono text-[10px] border ${badgeBorder}">
+                        🍋 ${d.ripeness}
+                      </span>
+                      <span class="text-slate-400 text-[10px] uppercase font-mono font-bold">${d.size} · ${d.quality}</span>
                     </div>
-                    <span class="text-[10px] text-slate-500 mt-0.5">Confidence: ${Math.round(d.ripeness_confidence * 100)}%</span>
+                    <span class="text-[10px] text-slate-500 font-mono mt-0.5">Confidence: ${Math.round(d.ripeness_confidence * 100)}%</span>
                   </div>
                 </div>
-                <div>${harvestAction}</div>
+                <div>${harvestBadge}</div>
               </div>
             `;
           }).join('');
         }
 
-      } catch (e) {}
+      } catch (err) {}
     }
 
-    setInterval(pollStats, 350);
+    setInterval(pollTelemetry, 350);
   </script>
 </body>
 </html>
