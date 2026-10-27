@@ -11,12 +11,13 @@ import logging
 import os
 import socket
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
 import cv2
 import numpy as np
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
 from PIL import Image
 
@@ -142,6 +143,59 @@ def predict():
     except Exception as e:
         logger.error(f"Inference error: {e}", exc_info=True)
         return jsonify({"error": str(e), "success": False}), 500
+
+
+@app.route("/api/video_feed")
+def video_feed():
+    """Stream annotated AI video from an IP camera stream or webcam."""
+    source_url = request.args.get("source", "").strip()
+    if not source_url:
+        return "Missing source parameter", 400
+
+    def generate_frames():
+        pipe = get_pipeline()
+        logger.info(f"Connecting to video stream: {source_url}")
+        
+        if source_url.isdigit():
+            cap = cv2.VideoCapture(int(source_url))
+        else:
+            cap = cv2.VideoCapture(source_url)
+
+        if not cap.isOpened():
+            logger.error(f"Failed to open video source: {source_url}")
+            return
+
+        frame_count = 0
+        last_results = None
+
+        try:
+            while cap.isOpened():
+                success, frame = cap.read()
+                if not success:
+                    break
+
+                frame_count += 1
+                # Run AI pipeline every 3rd frame to optimize latency
+                if frame_count % 3 == 0 or last_results is None:
+                    last_results = pipe.process_image(frame)
+
+                annotated = draw_pipeline_results(frame, last_results)
+                ret, buffer = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+                if not ret:
+                    continue
+
+                yield (
+                    b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + buffer.tobytes() + b"\r\n"
+                )
+                time.sleep(0.02)
+        finally:
+            cap.release()
+            logger.info("Video stream connection closed.")
+
+    return Response(
+        generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
 
 
 def run_server(host: str = "0.0.0.0", port: int = 5000):
