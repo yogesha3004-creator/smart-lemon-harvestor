@@ -157,7 +157,13 @@ def video_feed():
         logger.info(f"Connecting to video stream: {source_url}")
         
         if source_url.isdigit():
-            cap = cv2.VideoCapture(int(source_url))
+            cam_idx = int(source_url)
+            if sys.platform.startswith("win"):
+                cap = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
+                if not cap.isOpened():
+                    cap = cv2.VideoCapture(cam_idx)
+            else:
+                cap = cv2.VideoCapture(cam_idx)
         else:
             cap = cv2.VideoCapture(source_url)
 

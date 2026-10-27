@@ -95,8 +95,14 @@ def get_video_capture(source_str: str) -> cv2.VideoCapture:
     """
     if source_str.isdigit():
         cam_idx = int(source_str)
-        logger.info(f"Connecting to webcam index {cam_idx}...")
-        cap = cv2.VideoCapture(cam_idx)
+        logger.info(f"Connecting to webcam index {cam_idx} (trying DirectShow for virtual webcams)...")
+        # On Windows, try cv2.CAP_DSHOW first to support virtual webcams (Iriun, DroidCam, OBS)
+        if sys.platform.startswith("win"):
+            cap = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
+            if not cap.isOpened():
+                cap = cv2.VideoCapture(cam_idx)
+        else:
+            cap = cv2.VideoCapture(cam_idx)
     elif source_str.startswith(("http://", "https://", "rtsp://")):
         logger.info(f"Connecting to network camera / IP stream: {source_str}...")
         cap = cv2.VideoCapture(source_str)
