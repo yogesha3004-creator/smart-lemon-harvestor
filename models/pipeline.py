@@ -47,6 +47,23 @@ class LemonHarvestPipeline:
             detector_weights = self.config.get("detector", {}).get("weights", detector_weights)
             classifier_weights = self.config.get("classifier", {}).get("weights", classifier_weights)
             confidence = self.config.get("detector", {}).get("confidence_threshold", confidence)
+
+        # Fallback to pretrained weights if custom trained checkpoints don't exist yet
+        if detector_weights and not Path(detector_weights).exists() and not detector_weights.endswith(".pt"):
+            pass
+        elif detector_weights and not Path(detector_weights).exists() and detector_weights != "yolov8n.pt":
+            logger.info(
+                f"Trained detector weights '{detector_weights}' not found. "
+                "Falling back to pretrained 'yolov8n.pt'."
+            )
+            detector_weights = "yolov8n.pt"
+
+        if classifier_weights and not Path(classifier_weights).exists():
+            logger.info(
+                f"Trained classifier weights '{classifier_weights}' not found. "
+                "Using pretrained EfficientNet backbone."
+            )
+            classifier_weights = None
         
         # Initialize models
         self.detector = LemonDetector(

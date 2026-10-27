@@ -97,6 +97,9 @@ def get_video_capture(source_str: str) -> cv2.VideoCapture:
         cam_idx = int(source_str)
         logger.info(f"Connecting to webcam index {cam_idx}...")
         cap = cv2.VideoCapture(cam_idx)
+    elif source_str.startswith(("http://", "https://", "rtsp://")):
+        logger.info(f"Connecting to network camera / IP stream: {source_str}...")
+        cap = cv2.VideoCapture(source_str)
     else:
         src_path = Path(source_str)
         if not src_path.is_file():
