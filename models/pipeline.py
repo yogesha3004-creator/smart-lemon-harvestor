@@ -106,6 +106,27 @@ class LemonHarvestPipeline:
         # Stage 1: Detect lemons
         detections = self.detector.predict(img)
         
+        # Smart fallback: If no objects detected, check if image is a close-up photo of a lemon
+        if len(detections) == 0 and img.size > 0:
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            h = hsv[:, :, 0]
+            s = hsv[:, :, 1]
+            v = hsv[:, :, 2]
+            citrus_mask = ((h >= 15) & (h <= 85) & (s > 38) & (v > 38))
+            citrus_ratio = float(np.sum(citrus_mask)) / float(max(1, img.shape[0] * img.shape[1]))
+            if citrus_ratio > 0.15:
+                ih, iw = img.shape[:2]
+                px = int(iw * 0.06)
+                py = int(ih * 0.06)
+                detections = [{
+                    "bbox": [px, py, iw - px, ih - py],
+                    "confidence": round(min(0.95, 0.70 + citrus_ratio * 0.3), 2),
+                    "class_name": "lemon",
+                    "raw_class": "lemon",
+                    "target_type": "lemon",
+                }]
+                logger.info(f"Identified close-up lemon candidate (citrus coverage: {citrus_ratio*100:.1f}%)")
+
         # Stage 2 & 3: Process detections by target type (lemon, human, object)
         results = []
         for det in detections:

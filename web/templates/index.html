@@ -287,6 +287,110 @@
       <!-- Injected dynamically -->
     </div>
 
+    <!-- 4b. MANUAL PHOTO INSPECTION & HARVEST TEST STATION -->
+    <div class="hud-glass rounded-3xl p-4 border border-yellow-500/30 shadow-2xl flex flex-col gap-3.5 relative overflow-hidden transition-all duration-300">
+      <div class="absolute -right-16 -top-16 w-44 h-44 rounded-full bg-yellow-400/10 blur-3xl pointer-events-none"></div>
+
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b border-slate-800/90 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-slate-950 text-sm shadow-md shadow-yellow-500/20 font-bold">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xs font-black text-white uppercase tracking-wider font-mono">Manual Photo Inspection Station</h2>
+              <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/40">AI DIAGNOSTIC</span>
+            </div>
+            <p class="text-[10px] text-slate-400 font-mono">Upload or capture any lemon photo to verify ripeness & harvest readiness</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Dropzone & Action Bar -->
+      <div class="flex flex-col gap-2.5">
+        <input type="file" id="manualPhotoInput" accept="image/*" class="hidden">
+        
+        <div id="manualDropZone" class="border-2 border-dashed border-slate-700/80 hover:border-yellow-400/70 transition-all rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-900/40 hover:bg-slate-900/80 group">
+          <div class="w-11 h-11 rounded-2xl bg-yellow-400/10 border border-yellow-400/25 flex items-center justify-center text-yellow-400 text-lg group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <div class="text-center">
+            <p class="text-xs font-bold text-slate-200 font-mono">Click to Upload / Take Photo, or Drag Image Here</p>
+            <p class="text-[9px] text-slate-500 font-mono mt-0.5">Supports JPG, PNG, WEBP · Paste (Ctrl+V) also supported</p>
+          </div>
+        </div>
+
+        <!-- Quick Sample Test Buttons -->
+        <div class="flex items-center justify-between gap-2 text-[10px] font-mono pt-0.5">
+          <span class="text-slate-500 text-[9px] uppercase tracking-wider">Instant AI Tests:</span>
+          <div class="flex items-center gap-1.5">
+            <button id="sampleRipeBtn" type="button" class="px-2.5 py-1 rounded-xl bg-slate-900/90 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/15 active:scale-95 transition flex items-center gap-1 font-semibold">
+              🍋 Try Ripe Lemon
+            </button>
+            <button id="sampleRawBtn" type="button" class="px-2.5 py-1 rounded-xl bg-slate-900/90 border border-amber-500/40 text-amber-300 hover:bg-amber-500/15 active:scale-95 transition flex items-center gap-1 font-semibold">
+              🟢 Try Raw Lemon
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State Overlay -->
+      <div id="manualLoadingState" class="hidden py-6 flex flex-col items-center justify-center gap-2 text-yellow-400 font-mono text-xs">
+        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-yellow-400"></i>
+        <span>AI Vision Analyzing Lemon Ripeness & Quality...</span>
+      </div>
+
+      <!-- Analysis Results Container -->
+      <div id="manualAnalysisResult" class="hidden flex-col gap-3 pt-2 border-t border-slate-800/80">
+        
+        <!-- Big Prominent Harvest Verdict Banner -->
+        <div id="manualVerdictCard" class="p-3.5 rounded-2xl text-center border font-mono transition-all duration-300">
+          <!-- Injected dynamically -->
+        </div>
+
+        <!-- Visual Result & Side-by-Side Diagnostics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Annotated AI Vision Image -->
+          <div class="relative rounded-2xl overflow-hidden border border-slate-800 bg-black/90 aspect-video flex items-center justify-center">
+            <img id="manualResultImage" src="" alt="AI Inspection Result" class="w-full h-full object-contain">
+            <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-[8px] font-mono font-bold text-yellow-300 border border-yellow-400/30">
+              AI VISION ANNOTATED
+            </span>
+          </div>
+
+          <!-- Diagnostic Metrics Cards -->
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div class="hud-glass p-2.5 rounded-xl border-slate-800 flex flex-col justify-between">
+              <span class="text-[9px] text-slate-400 uppercase">Ripeness Stage</span>
+              <span id="manualRipenessVal" class="text-sm font-black text-yellow-300 mt-1 uppercase">--</span>
+              <span id="manualRipenessConf" class="text-[8px] text-slate-500">Conf: --%</span>
+            </div>
+            
+            <div class="hud-glass p-2.5 rounded-xl border-slate-800 flex flex-col justify-between">
+              <span class="text-[9px] text-slate-400 uppercase">Quality Grade</span>
+              <span id="manualQualityVal" class="text-sm font-black text-cyan-300 mt-1 uppercase">--</span>
+              <span id="manualQualityConf" class="text-[8px] text-slate-500">Commercial Standard</span>
+            </div>
+
+            <div class="hud-glass p-2.5 rounded-xl border-slate-800 flex flex-col justify-between">
+              <span class="text-[9px] text-slate-400 uppercase">Est. Size</span>
+              <span id="manualSizeVal" class="text-sm font-black text-purple-300 mt-1 uppercase">--</span>
+              <span id="manualSizeDesc" class="text-[8px] text-slate-500">Standard</span>
+            </div>
+
+            <div class="hud-glass p-2.5 rounded-xl border-slate-800 flex flex-col justify-between">
+              <span class="text-[9px] text-slate-400 uppercase">Target Identity</span>
+              <span id="manualTargetVal" class="text-sm font-black text-emerald-400 mt-1 uppercase">--</span>
+              <span id="manualTargetConf" class="text-[8px] text-slate-500">Verified</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
     <!-- 5. Advanced Telemetry Gauges (Donut Radial Meter + Stats) -->
     <div class="grid grid-cols-3 gap-2.5">
 
@@ -620,6 +724,311 @@
     }
 
     setInterval(pollTelemetry, 350);
+
+    // --- MANUAL PHOTO INSPECTION & HARVEST TEST CONTROLLER ---
+    const manualPhotoInput = document.getElementById('manualPhotoInput');
+    const manualDropZone = document.getElementById('manualDropZone');
+    const manualLoadingState = document.getElementById('manualLoadingState');
+    const manualAnalysisResult = document.getElementById('manualAnalysisResult');
+    const manualVerdictCard = document.getElementById('manualVerdictCard');
+    const manualResultImage = document.getElementById('manualResultImage');
+    const manualRipenessVal = document.getElementById('manualRipenessVal');
+    const manualRipenessConf = document.getElementById('manualRipenessConf');
+    const manualQualityVal = document.getElementById('manualQualityVal');
+    const manualQualityConf = document.getElementById('manualQualityConf');
+    const manualSizeVal = document.getElementById('manualSizeVal');
+    const manualSizeDesc = document.getElementById('manualSizeDesc');
+    const manualTargetVal = document.getElementById('manualTargetVal');
+    const manualTargetConf = document.getElementById('manualTargetConf');
+
+    const sampleRipeBtn = document.getElementById('sampleRipeBtn');
+    const sampleRawBtn = document.getElementById('sampleRawBtn');
+
+    manualDropZone.addEventListener('click', () => manualPhotoInput.click());
+
+    manualDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      manualDropZone.classList.add('border-yellow-400', 'bg-slate-900/90');
+    });
+
+    manualDropZone.addEventListener('dragleave', () => {
+      manualDropZone.classList.remove('border-yellow-400', 'bg-slate-900/90');
+    });
+
+    manualDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      manualDropZone.classList.remove('border-yellow-400', 'bg-slate-900/90');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processManualFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    manualPhotoInput.addEventListener('change', () => {
+      if (manualPhotoInput.files && manualPhotoInput.files.length > 0) {
+        processManualFile(manualPhotoInput.files[0]);
+      }
+    });
+
+    // Support clipboard paste (Ctrl+V) of lemon photos
+    window.addEventListener('paste', (e) => {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (const item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const blob = item.getAsFile();
+          processManualFile(blob);
+          break;
+        }
+      }
+    });
+
+    // Synthetic sample generator (draws realistic ripe yellow lemon or raw green lemon)
+    function generateSyntheticLemonImage(type) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 480;
+      canvas.height = 360;
+      const ctx = canvas.getContext('2d');
+
+      // Orchard background gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, 480, 360);
+      bgGrad.addColorStop(0, '#111a14');
+      bgGrad.addColorStop(0.5, '#1b2d1c');
+      bgGrad.addColorStop(1, '#0d160e');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 480, 360);
+
+      // Background foliage leaves
+      ctx.fillStyle = '#1e3f20';
+      ctx.beginPath();
+      ctx.ellipse(140, 120, 60, 25, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(340, 110, 70, 28, Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Lemon stem
+      ctx.strokeStyle = '#5a4625';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(240, 100);
+      ctx.quadraticCurveTo(240, 70, 260, 50);
+      ctx.stroke();
+
+      // Lemon body
+      ctx.save();
+      ctx.translate(240, 190);
+      ctx.beginPath();
+      // Lemon oval with pointed tips
+      ctx.moveTo(-110, 0);
+      ctx.bezierCurveTo(-110, -85, 110, -85, 110, 0);
+      ctx.bezierCurveTo(110, 85, -110, 85, -110, 0);
+
+      // Fruit color gradient
+      const lemonGrad = ctx.createRadialGradient(-20, -20, 15, 0, 0, 115);
+      if (type === 'ripe') {
+        lemonGrad.addColorStop(0, '#FFF59D');  // Highlight
+        lemonGrad.addColorStop(0.3, '#FFEE58'); // Bright Yellow
+        lemonGrad.addColorStop(0.75, '#FDD835'); // Vibrant Ripe Lemon
+        lemonGrad.addColorStop(1, '#C0CA33');   // Subtle shadow
+      } else {
+        lemonGrad.addColorStop(0, '#C8E6C9');  // Raw highlight
+        lemonGrad.addColorStop(0.35, '#66BB6A'); // Green raw skin
+        lemonGrad.addColorStop(0.8, '#2E7D32');  // Deep raw lime/lemon
+        lemonGrad.addColorStop(1, '#1B5E20');   // Dark green rim
+      }
+      ctx.fillStyle = lemonGrad;
+      ctx.fill();
+
+      // Subtle pores/texture
+      ctx.fillStyle = type === 'ripe' ? 'rgba(230, 180, 0, 0.12)' : 'rgba(20, 80, 20, 0.15)';
+      for (let i = 0; i < 40; i++) {
+        const rx = (Math.random() - 0.5) * 160;
+        const ry = (Math.random() - 0.5) * 110;
+        ctx.beginPath();
+        ctx.arc(rx, ry, Math.random() * 2 + 1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return canvas.toDataURL('image/jpeg', 0.9);
+    }
+
+    sampleRipeBtn.addEventListener('click', () => {
+      const dataUrl = generateSyntheticLemonImage('ripe');
+      uploadManualBase64(dataUrl, 'Ripe Lemon Sample');
+    });
+
+    sampleRawBtn.addEventListener('click', () => {
+      const dataUrl = generateSyntheticLemonImage('raw');
+      uploadManualBase64(dataUrl, 'Raw Lemon Sample');
+    });
+
+    async function processManualFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        alert('Please select a valid image file (JPG, PNG, WEBP).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadManualBase64(e.target.result, file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function uploadManualBase64(base64Data, label) {
+      manualLoadingState.classList.remove('hidden');
+      manualAnalysisResult.classList.add('hidden');
+
+      try {
+        const response = await fetch('/api/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Data })
+        });
+        const data = await response.json();
+
+        manualLoadingState.classList.add('hidden');
+        if (!data.success) {
+          alert('Inspection error: ' + (data.error || 'Unable to analyze image'));
+          return;
+        }
+
+        renderManualInspectionResult(data);
+      } catch (err) {
+        manualLoadingState.classList.add('hidden');
+        console.error('Manual inspect fetch error:', err);
+        alert('Failed to connect to inspection API.');
+      }
+    }
+
+    function renderManualInspectionResult(data) {
+      manualAnalysisResult.classList.remove('hidden');
+      manualAnalysisResult.classList.add('flex');
+
+      manualResultImage.src = data.annotated_image;
+
+      const detections = data.detections || [];
+      const summary = data.summary || {};
+
+      const lemonDets = detections.filter(d => d.target_type === 'lemon');
+      const humanDets = detections.filter(d => d.target_type === 'human');
+      const objectDets = detections.filter(d => d.target_type === 'object');
+
+      // 1. Determine Big Prominent Harvest Verdict
+      if (humanDets.length > 0) {
+        manualVerdictCard.className = 'p-4 rounded-2xl text-center glow-pill-cyan bg-cyan-950/70 border border-cyan-400 shadow-2xl';
+        manualVerdictCard.innerHTML = `
+          <div class="flex items-center justify-center gap-2 text-cyan-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+            <i class="fa-solid fa-user-shield text-cyan-400 text-lg"></i> SAFETY INTERLOCK: HUMAN OPERATOR DETECTED
+          </div>
+          <p class="text-xs text-cyan-200/90 mt-1.5 font-mono">
+            Arm movement paused. Operator or person identified in the frame. Not a harvest crop.
+          </p>
+        `;
+        playCockpitSound('safety');
+
+        manualTargetVal.textContent = 'HUMAN';
+        manualTargetVal.className = 'text-sm font-black text-cyan-400 mt-1 uppercase';
+        manualTargetConf.textContent = 'Safety Hold Active';
+        manualRipenessVal.textContent = 'N/A';
+        manualRipenessConf.textContent = 'N/A';
+        manualQualityVal.textContent = 'HUMAN';
+        manualQualityConf.textContent = 'Protected Target';
+        manualSizeVal.textContent = 'N/A';
+        manualSizeDesc.textContent = 'N/A';
+        return;
+      }
+
+      if (lemonDets.length > 0) {
+        const first = lemonDets[0];
+        const isHarvestable = lemonDets.some(l => l.harvest);
+
+        if (isHarvestable) {
+          manualVerdictCard.className = 'p-4 rounded-2xl text-center glow-pill-green bg-gradient-to-r from-emerald-950/90 via-emerald-900/70 to-emerald-950/90 border border-emerald-400 shadow-2xl';
+          manualVerdictCard.innerHTML = `
+            <div class="flex items-center justify-center gap-2 text-emerald-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+              <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i> 🍋 READY TO HARVEST: PICK NOW!
+            </div>
+            <p class="text-xs text-emerald-200/90 mt-1.5 font-mono">
+              <strong>EXCELLENT HARVEST CONDITION:</strong> Lemon is ripe, commercially sized (${first.size}), and meets Grade-A harvesting specifications.
+            </p>
+          `;
+          playCockpitSound('lock');
+        } else {
+          manualVerdictCard.className = 'p-4 rounded-2xl text-center glow-pill-gold bg-gradient-to-r from-amber-950/90 via-amber-900/70 to-amber-950/90 border border-yellow-400 shadow-2xl';
+          manualVerdictCard.innerHTML = `
+            <div class="flex items-center justify-center gap-2 text-yellow-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+              <i class="fa-solid fa-hourglass-half text-yellow-400 text-lg"></i> ⏳ NOT READY TO HARVEST: RIPENING IN PROGRESS
+            </div>
+            <p class="text-xs text-yellow-200/90 mt-1.5 font-mono">
+              <strong>STANDBY:</strong> Fruit is currently <em>${first.ripeness.toUpperCase()}</em>. Allow more sunlight & time on the tree until yellow maturation.
+            </p>
+          `;
+        }
+
+        // Metrics breakdown
+        manualTargetVal.textContent = 'LEMON';
+        manualTargetVal.className = 'text-sm font-black text-emerald-400 mt-1 uppercase';
+        manualTargetConf.textContent = `Conf: ${Math.round((first.detection_confidence || 0.9) * 100)}%`;
+
+        manualRipenessVal.textContent = first.ripeness.replace('_', ' ').toUpperCase();
+        manualRipenessVal.className = first.ripeness === 'ripe' ? 'text-sm font-black text-emerald-400 mt-1 uppercase' :
+                                      first.ripeness === 'semi_ripe' ? 'text-sm font-black text-yellow-300 mt-1 uppercase' :
+                                      'text-sm font-black text-amber-400 mt-1 uppercase';
+        manualRipenessConf.textContent = `Conf: ${Math.round((first.ripeness_confidence || 0.85) * 100)}%`;
+
+        manualQualityVal.textContent = first.quality.replace('_', ' ').toUpperCase();
+        manualQualityVal.className = 'text-sm font-black text-cyan-300 mt-1 uppercase';
+        manualQualityConf.textContent = `Commercial Grade`;
+
+        manualSizeVal.textContent = first.size.toUpperCase();
+        manualSizeDesc.textContent = `Area Calibrated`;
+        return;
+      }
+
+      if (objectDets.length > 0) {
+        const obj = objectDets[0];
+        manualVerdictCard.className = 'p-4 rounded-2xl text-center bg-slate-900/90 border border-slate-700 shadow-xl';
+        manualVerdictCard.innerHTML = `
+          <div class="flex items-center justify-center gap-2 text-slate-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+            <i class="fa-solid fa-box text-slate-400 text-lg"></i> NON-HARVEST OBJECT DETECTED (${obj.class_name.toUpperCase()})
+          </div>
+          <p class="text-xs text-slate-400 mt-1.5 font-mono">
+            The object in view is classified as <strong>${obj.class_name}</strong>. Not a harvestable citrus crop.
+          </p>
+        `;
+
+        manualTargetVal.textContent = obj.class_name.toUpperCase();
+        manualTargetVal.className = 'text-sm font-black text-slate-300 mt-1 uppercase';
+        manualTargetConf.textContent = `Conf: ${Math.round(obj.detection_confidence * 100)}%`;
+        manualRipenessVal.textContent = 'N/A';
+        manualRipenessConf.textContent = 'Non-Crop';
+        manualQualityVal.textContent = 'N/A';
+        manualQualityConf.textContent = 'Non-Crop';
+        manualSizeVal.textContent = 'N/A';
+        manualSizeDesc.textContent = 'N/A';
+        return;
+      }
+
+      // 0 Detections / Ambiguous
+      manualVerdictCard.className = 'p-4 rounded-2xl text-center bg-yellow-950/40 border border-yellow-500/40 shadow-xl';
+      manualVerdictCard.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-yellow-300 font-extrabold text-sm tracking-wider uppercase font-mono">
+          <i class="fa-solid fa-circle-question text-yellow-400 text-lg"></i> NO LEMON IDENTIFIED
+        </div>
+        <p class="text-xs text-yellow-200/90 mt-1.5 font-mono">
+          The AI did not find a lemon in this photo. Please upload a clear photo of citrus fruit on a branch or white background.
+        </p>
+      `;
+      manualTargetVal.textContent = 'UNVERIFIED';
+      manualTargetVal.className = 'text-sm font-black text-yellow-400 mt-1 uppercase';
+      manualTargetConf.textContent = 'Scanning';
+      manualRipenessVal.textContent = '--';
+      manualRipenessConf.textContent = '--';
+      manualQualityVal.textContent = '--';
+      manualQualityConf.textContent = '--';
+      manualSizeVal.textContent = '--';
+      manualSizeDesc.textContent = '--';
+    }
   </script>
 </body>
 </html>

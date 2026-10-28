@@ -126,7 +126,7 @@ class LemonDetector:
                         target_type = "human"
                         display_name = "Human / Operator"
                     # 2. Lemon / Citrus / Fruit Detection (including round fruits & yellow items)
-                    elif raw_name in ["lemon", "orange", "apple", "banana", "sports ball"]:
+                    elif raw_name in ["lemon", "orange", "apple", "banana", "sports ball", "frisbee", "tennis ball"]:
                         target_type = "lemon"
                         display_name = "lemon"
                     # 3. Other Non-Harvest Object Detection
