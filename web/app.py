@@ -11,6 +11,7 @@ import logging
 import os
 import socket
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -41,6 +42,8 @@ latest_stream_stats = {
     "summary": {"total_lemons": 0, "harvestable": 0, "not_ready": 0},
     "detections": []
 }
+active_capture_lock = threading.Lock()
+current_capture: cv2.VideoCapture | None = None
 
 
 def get_pipeline() -> LemonHarvestPipeline:
@@ -149,43 +152,71 @@ def predict():
         return jsonify({"error": str(e), "success": False}), 500
 
 
-@app.route("/api/video_feed")
-def video_feed():
-    """Stream annotated AI video from an IP camera stream or webcam."""
-    source_url = request.args.get("source", "").strip()
-    if not source_url:
-        return "Missing source parameter", 400
+class CameraStreamManager:
+    """Thread-safe camera stream manager that isolates OpenCV capture from Flask threads."""
 
-    def generate_frames():
+    def __init__(self):
+        self.cap: cv2.VideoCapture | None = None
+        self.source: str | None = None
+        self.running: bool = False
+        self.lock = threading.Lock()
+        self.latest_jpeg: bytes | None = None
+        self.thread: threading.Thread | None = None
+
+    def set_source(self, source: str):
+        """Switch video source safely."""
+        with self.lock:
+            if self.source == source and self.running:
+                return
+            self._stop_capture()
+            self.source = source
+            self.running = True
+            self.thread = threading.Thread(target=self._worker, daemon=True)
+            self.thread.start()
+
+    def _stop_capture(self):
+        self.running = False
+        if self.cap:
+            try:
+                self.cap.release()
+            except Exception:
+                pass
+            self.cap = None
+
+    def _worker(self):
         pipe = get_pipeline()
-        logger.info(f"Connecting to video stream: {source_url}")
-        
-        if source_url.isdigit():
-            cam_idx = int(source_url)
-            if sys.platform.startswith("win"):
-                cap = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
-                if not cap.isOpened():
-                    cap = cv2.VideoCapture(cam_idx)
-            else:
-                cap = cv2.VideoCapture(cam_idx)
-        else:
-            cap = cv2.VideoCapture(source_url)
+        source = self.source or "2"
+        logger.info(f"CameraStreamManager starting capture for source: {source}")
 
-        if not cap.isOpened():
-            logger.error(f"Failed to open video source: {source_url}")
+        if source.isdigit():
+            cam_idx = int(source)
+            if sys.platform.startswith("win"):
+                self.cap = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
+                if not self.cap.isOpened():
+                    self.cap = cv2.VideoCapture(cam_idx)
+            else:
+                self.cap = cv2.VideoCapture(cam_idx)
+        else:
+            self.cap = cv2.VideoCapture(source)
+
+        if not self.cap or not self.cap.isOpened():
+            logger.error(f"CameraStreamManager failed to open source: {source}")
+            self.running = False
             return
 
         frame_count = 0
         last_results = None
 
-        try:
-            while cap.isOpened():
-                success, frame = cap.read()
-                if not success:
+        while self.running:
+            try:
+                if not self.cap or not self.cap.isOpened():
                     break
+                success, frame = self.cap.read()
+                if not success or frame is None or frame.size == 0:
+                    time.sleep(0.04)
+                    continue
 
                 frame_count += 1
-                # Run AI pipeline every 2nd frame for fluid real-time tracking
                 if frame_count % 2 == 0 or last_results is None:
                     last_results = pipe.process_image(frame)
                     latest_stream_stats["summary"] = last_results["summary"]
@@ -193,17 +224,38 @@ def video_feed():
 
                 annotated = draw_pipeline_results(frame, last_results)
                 ret, buffer = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
-                if not ret:
-                    continue
+                if ret:
+                    with self.lock:
+                        self.latest_jpeg = buffer.tobytes()
+            except Exception as e:
+                logger.error(f"Camera worker frame error: {e}")
+                time.sleep(0.05)
+            time.sleep(0.015)
 
+        self._stop_capture()
+        logger.info("CameraStreamManager worker stopped.")
+
+
+stream_manager = CameraStreamManager()
+
+
+@app.route("/api/video_feed")
+def video_feed():
+    """Stream annotated AI video safely to any number of browser clients."""
+    source_url = request.args.get("source", "2").strip()
+    stream_manager.set_source(source_url)
+
+    def generate_frames():
+        while True:
+            with stream_manager.lock:
+                jpeg = stream_manager.latest_jpeg
+
+            if jpeg is not None:
                 yield (
                     b"--frame\r\n"
-                    b"Content-Type: image/jpeg\r\n\r\n" + buffer.tobytes() + b"\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + jpeg + b"\r\n"
                 )
-                time.sleep(0.02)
-        finally:
-            cap.release()
-            logger.info("Video stream connection closed.")
+            time.sleep(0.035)
 
     return Response(
         generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
