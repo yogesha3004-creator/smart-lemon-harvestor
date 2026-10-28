@@ -153,64 +153,72 @@ def predict():
 
 
 class CameraStreamManager:
-    """Thread-safe camera stream manager that isolates OpenCV capture from Flask threads."""
+    """Thread-safe camera stream manager with smooth single-worker camera switching."""
 
     def __init__(self):
         self.cap: cv2.VideoCapture | None = None
-        self.source: str | None = None
-        self.running: bool = False
+        self.requested_source: str = "2"
+        self.active_source: str | None = None
         self.lock = threading.Lock()
         self.latest_jpeg: bytes | None = None
-        self.thread: threading.Thread | None = None
+        self.worker_thread = threading.Thread(target=self._run_loop, daemon=True)
+        self.worker_thread.start()
 
     def set_source(self, source: str):
-        """Switch video source safely."""
+        """Request a switch to another camera source."""
         with self.lock:
-            if self.source == source and self.running:
-                return
-            self._stop_capture()
-            self.source = source
-            self.running = True
-            self.thread = threading.Thread(target=self._worker, daemon=True)
-            self.thread.start()
+            self.requested_source = str(source).strip()
+            logger.info(f"Camera switch requested to: {self.requested_source}")
 
-    def _stop_capture(self):
-        self.running = False
-        if self.cap:
-            try:
-                self.cap.release()
-            except Exception:
-                pass
-            self.cap = None
-
-    def _worker(self):
-        pipe = get_pipeline()
-        source = self.source or "2"
-        logger.info(f"CameraStreamManager starting capture for source: {source}")
-
+    def _open_camera(self, source: str) -> cv2.VideoCapture | None:
+        logger.info(f"Opening camera source: {source}")
         if source.isdigit():
             cam_idx = int(source)
             if sys.platform.startswith("win"):
-                self.cap = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
-                if not self.cap.isOpened():
-                    self.cap = cv2.VideoCapture(cam_idx)
+                cap = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
+                if not cap.isOpened():
+                    cap = cv2.VideoCapture(cam_idx)
             else:
-                self.cap = cv2.VideoCapture(cam_idx)
+                cap = cv2.VideoCapture(cam_idx)
         else:
-            self.cap = cv2.VideoCapture(source)
+            cap = cv2.VideoCapture(source)
 
-        if not self.cap or not self.cap.isOpened():
-            logger.error(f"CameraStreamManager failed to open source: {source}")
-            self.running = False
-            return
+        if cap and cap.isOpened():
+            logger.info(f"Successfully opened camera source: {source}")
+            return cap
+        else:
+            logger.warning(f"Failed to open camera source: {source}")
+            return None
 
+    def _run_loop(self):
+        pipe = get_pipeline()
         frame_count = 0
         last_results = None
 
-        while self.running:
+        while True:
+            # Check if source switch was requested
+            with self.lock:
+                target = self.requested_source
+
+            if target != self.active_source:
+                if self.cap:
+                    try:
+                        self.cap.release()
+                    except Exception:
+                        pass
+                    self.cap = None
+                    time.sleep(0.2)  # Allow DirectShow COM runtime to cleanly release
+
+                self.cap = self._open_camera(target)
+                self.active_source = target
+                frame_count = 0
+                last_results = None
+
+            if self.cap is None or not self.cap.isOpened():
+                time.sleep(0.15)
+                continue
+
             try:
-                if not self.cap or not self.cap.isOpened():
-                    break
                 success, frame = self.cap.read()
                 if not success or frame is None or frame.size == 0:
                     time.sleep(0.04)
@@ -227,23 +235,35 @@ class CameraStreamManager:
                 if ret:
                     with self.lock:
                         self.latest_jpeg = buffer.tobytes()
-            except Exception as e:
-                logger.error(f"Camera worker frame error: {e}")
-                time.sleep(0.05)
-            time.sleep(0.015)
 
-        self._stop_capture()
-        logger.info("CameraStreamManager worker stopped.")
+            except Exception as e:
+                logger.error(f"Stream worker error: {e}")
+                time.sleep(0.05)
+
+            time.sleep(0.015)
 
 
 stream_manager = CameraStreamManager()
 
 
+@app.route("/api/switch_camera", methods=["POST", "GET"])
+def switch_camera():
+    """Seamlessly switch camera source in the background worker without dropping HTTP stream."""
+    source = request.args.get("source")
+    if not source and request.is_json:
+        source = (request.get_json() or {}).get("source")
+    if not source:
+        source = "2"
+    stream_manager.set_source(str(source).strip())
+    return jsonify({"success": True, "source": source})
+
+
 @app.route("/api/video_feed")
 def video_feed():
     """Stream annotated AI video safely to any number of browser clients."""
-    source_url = request.args.get("source", "2").strip()
-    stream_manager.set_source(source_url)
+    source_url = request.args.get("source")
+    if source_url:
+        stream_manager.set_source(source_url)
 
     def generate_frames():
         while True:

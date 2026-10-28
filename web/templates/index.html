@@ -421,12 +421,23 @@
       sfxIcon.className = sfxEnabled ? "fa-solid fa-volume-high" : "fa-solid fa-volume-xmark text-slate-500";
     });
 
-    cameraSelect.addEventListener('change', () => {
-      streamFeed.src = `/api/video_feed?source=${cameraSelect.value}&t=${Date.now()}`;
+    cameraSelect.addEventListener('change', async () => {
+      const selected = cameraSelect.value;
+      const latencyBadge = document.getElementById('latencyBadge');
+      if (latencyBadge) latencyBadge.textContent = "SWITCHING...";
+      try {
+        await fetch(`/api/switch_camera?source=${selected}`, { method: 'POST' });
+        setTimeout(() => {
+          if (latencyBadge) latencyBadge.textContent = "FEED ACTIVE";
+        }, 600);
+      } catch (e) {
+        console.error('Camera switch error:', e);
+      }
     });
 
-    refreshBtn.addEventListener('click', () => {
-      streamFeed.src = `/api/video_feed?source=${cameraSelect.value}&t=${Date.now()}`;
+    refreshBtn.addEventListener('click', async () => {
+      const selected = cameraSelect.value;
+      await fetch(`/api/switch_camera?source=${selected}`, { method: 'POST' });
     });
 
     // Main Telemetry Polling Loop
